@@ -36,7 +36,7 @@ Each have their own permissions on what they are restricted to do.
 |Slave|X|O|X|X|X|O|
 
 Serve and consume are special syncing behaviors.
-* Serve allows the application to function as a server for sending changes
- to the database
-* Consume allows the application to function as a client and consume the
-changes to the database from the serving server.
+* **Serve** allows the application to function as a server for sending changes
+ from the movie database to the clients.
+* **Consume** allows the application to function as a client and consume the
+changes from the database received from the serving server.
