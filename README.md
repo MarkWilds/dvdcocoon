@@ -22,3 +22,21 @@ and allows full control of the movie data.
 ### Slave
 This module is an android view for DVDCocoon
 and allows only read/view functionality for the movie data.
+
+## Permissions
+Because there are 2 types of applications:
+* Master
+* Slave
+
+Each have their own permissions on what they are restricted to do.
+
+||Create|Read|Update|Delete|Serve|Consume|
+|---|---|---|---|---|---|---|
+|Master|O|O|O|O|O|O|
+|Slave|X|O|X|X|X|O|
+
+Serve and consume are special syncing behaviors.
+* Serve allows the application to function as a server for sending changes
+ to the database
+* Consume allows the application to function as a client and consume the
+changes to the database from the serving server.
