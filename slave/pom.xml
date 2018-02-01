@@ -11,5 +11,11 @@
 
     <artifactId>slave</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-android</artifactId>
+            <version>5.0</version>
+        </dependency>
+    </dependencies>
 </project>
