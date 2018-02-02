@@ -11,12 +11,11 @@ import java.sql.*;
  * @since 1-2-2018
  */
 @Module
-public class DatabaseModule {
+public class DesktopDatabaseModule {
     @Provides
     @Singleton
-    @Named("DesktopDatabase")
     public static Database provideDatabase() {
-        Database database =new DesktopDatabase();
+        Database database = new DesktopDatabase();
         try {
             database.initialize();
         } catch (SQLException | ClassNotFoundException e) {

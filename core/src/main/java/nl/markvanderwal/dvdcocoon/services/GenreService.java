@@ -6,12 +6,11 @@ import nl.markvanderwal.dvdcocoon.models.*;
 
 /**
  * @author Mark "Wilds" van der Wal
- * @since 1-2-2018
+ * @since 2-2-2018
  */
-public class MovieService extends BaseService<Movie, Integer> {
-
+public class GenreService extends BaseService<Genre, Integer> {
     @Override
-    protected Dao<Movie, Integer> initializeDao(Database database) {
-        return database.getMovieRepository();
+    protected Dao<Genre, Integer> initializeDao(Database database) {
+        return database.getGenreRepository();
     }
 }

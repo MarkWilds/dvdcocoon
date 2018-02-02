@@ -26,7 +26,7 @@ public class Movie {
     @DatabaseField
     private String description;
 
-    @DatabaseField(canBeNull = false, foreign = true)
+    @DatabaseField(canBeNull = false, foreign = true, foreignAutoCreate = true, foreignAutoRefresh=true)
     private Medium medium;
 
     public int getId() {

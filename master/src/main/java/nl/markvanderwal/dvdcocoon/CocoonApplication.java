@@ -1,10 +1,13 @@
 package nl.markvanderwal.dvdcocoon;
 
 import javafx.application.*;
+import javafx.scene.image.*;
 import javafx.stage.*;
 import nl.markvanderwal.dvdcocoon.dagger.*;
 import nl.markvanderwal.dvdcocoon.views.*;
 import org.apache.logging.log4j.*;
+
+import java.io.*;
 
 /**
  * author: Mark van der Wal
@@ -20,9 +23,13 @@ public class CocoonApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        ControllerInjector injector = DaggerControllerInjector.create();
-        MainController controller = injector.mainController().get();
-        Stage mainStage = controller.createStage();
+        MasterInjector injector = DaggerMasterInjector.create();
+        MainFormController controller = injector.mainFormController().get();
+        Stage mainStage = controller.createStage(primaryStage);
+
+        InputStream iconStream = getClass().getResourceAsStream("/icon.png");
+        mainStage.getIcons().add(new Image(iconStream));
+
         mainStage.setTitle("DVDCocoon 2.0");
         mainStage.show();
     }

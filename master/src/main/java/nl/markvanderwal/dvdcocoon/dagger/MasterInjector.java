@@ -1,7 +1,6 @@
 package nl.markvanderwal.dvdcocoon.dagger;
 
 import dagger.*;
-import javafx.fxml.*;
 import nl.markvanderwal.dvdcocoon.views.*;
 
 import javax.inject.*;
@@ -11,8 +10,8 @@ import javax.inject.*;
  * @since 1-2-2018
  */
 @Singleton
-@Component(modules = DatabaseModule.class)
-public interface ControllerInjector {
+@Component(modules = {DesktopDatabaseModule.class, ServiceModule.class})
+public interface MasterInjector {
 
-    Provider<MainController> mainController();
+    Provider<MainFormController> mainFormController();
 }

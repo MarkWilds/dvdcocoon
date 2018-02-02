@@ -3,6 +3,7 @@ package nl.markvanderwal.dvdcocoon.views;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.stage.*;
+import nl.markvanderwal.dvdcocoon.dagger.*;
 
 import java.io.*;
 import java.net.*;
@@ -67,8 +68,20 @@ abstract class AbstractFXMLViewController implements Initializable {
      * @return New stage using a scene with the root node from the FXML file.
      */
     public Stage createStage() {
+        return createStage(null);
+    }
+
+    /**
+     * @return New stage using a scene with the root node from the FXML file.
+     */
+    public Stage createStage(final Stage parent) {
         final Parent root = loadFxml();
-        final Stage stage = new Stage();
+
+        Stage stage = parent;
+        if(stage == null) {
+            stage = new Stage();
+        }
+
         stage.setScene(new Scene(root));
         stage.sizeToScene();
         return stage;

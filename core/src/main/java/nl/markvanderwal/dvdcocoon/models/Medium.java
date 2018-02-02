@@ -7,8 +7,8 @@ import com.j256.ormlite.table.*;
  * @author Mark "Wilds" van der Wal
  * @since 1-2-2018
  */
-@DatabaseTable(tableName = "Medium")
-public class Medium {
+@DatabaseTable(tableName = "Mediums")
+public class Medium implements IdValueType {
 
     @DatabaseField(generatedId = true)
     private int id;
