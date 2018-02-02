@@ -1,4 +1,4 @@
-# DVDCocoon 1.0
+# DVDCocoon 2.0
 DVDCocoon is a simple movie management application that allows for syncing
 between master and slave applications.
 
