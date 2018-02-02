@@ -23,7 +23,7 @@ public class CocoonApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        DesktopInjector injector = DaggerMasterInjector.create();
+        DesktopInjector injector = DaggerDesktopInjector.create();
         MainFormController controller = injector.mainFormController().get();
         Stage mainStage = controller.createStage(primaryStage);
 

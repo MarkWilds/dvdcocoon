@@ -7,7 +7,8 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.stage.*;
-import nl.markvanderwal.dvdcocoon.dagger.*;
+import nl.markvanderwal.dvdcocoon.*;
+import nl.markvanderwal.dvdcocoon.exceptions.*;
 import nl.markvanderwal.dvdcocoon.models.*;
 import nl.markvanderwal.dvdcocoon.services.*;
 import org.apache.logging.log4j.*;
@@ -83,19 +84,27 @@ public class MainFormController extends AbstractFXMLViewController {
         });
 
         mediumsButton.setOnAction(actionEvent -> {
-            showValueForm(actionEvent,"Mediums", mediumService);
+            showValueForm(actionEvent,"Mediums", mediumService, (id, name) -> {
+                Medium medium = new Medium();
+                medium.setName(name);
+                return medium;
+            });
         });
 
         genresButton.setOnAction(actionEvent -> {
-            showValueForm(actionEvent,"Genres", genreService);
+            showValueForm(actionEvent,"Genres", genreService, (id, name) -> {
+                Genre genre = new Genre();
+                genre.setName(name);
+                return genre;
+            });
         });
 
         movieToolbar.setText(String.format("Films geladen: %s", movieTable.getItems().size()));
     }
 
     private void showValueForm(ActionEvent event, String name,
-                               BaseService<? extends IdValueType, Integer> service) {
-        ValueFormController controller = new ValueFormController(service);
+                               BaseService service, IdValueTypeFactory factory) {
+        ValueFormController controller = new ValueFormController(service, factory);
         Stage stage = controller.createStage();
         controller.setValueName(name);
 
@@ -127,10 +136,14 @@ public class MainFormController extends AbstractFXMLViewController {
         });
 
         genresColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty("No genres yet!");
+            return new SimpleStringProperty("Nog geen genres!");
         });
 
         movieTable.setItems(movieService.bind());
-        movieService.fetch();
+        try {
+            movieService.fetch();
+        } catch (ServiceException e) {
+            LOGGER.error("Gefaald om de film data op te halen!");
+        }
     }
 }

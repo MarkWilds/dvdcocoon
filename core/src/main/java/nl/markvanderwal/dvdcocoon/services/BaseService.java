@@ -3,6 +3,7 @@ package nl.markvanderwal.dvdcocoon.services;
 import com.j256.ormlite.dao.*;
 import javafx.collections.*;
 import nl.markvanderwal.dvdcocoon.dal.*;
+import nl.markvanderwal.dvdcocoon.exceptions.*;
 
 import javax.inject.*;
 import java.sql.*;
@@ -46,13 +47,13 @@ public abstract class BaseService<data, id> {
     /**
      * Fetch the data from remote
      */
-    public void fetch() {
+    public void fetch() throws ServiceException  {
         try {
             List<data> dataList = dao.queryForAll();
             dataObservableList.clear();
             dataObservableList.addAll(dataList);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new ServiceException("Could not fetch data from remote");
         }
     }
 
@@ -62,23 +63,27 @@ public abstract class BaseService<data, id> {
      * @param value the data to create
      * @throws SQLException
      */
-    public void create(data value) throws SQLException {
+    public void create(data value) throws ServiceException {
         try {
             dao.create(value);
             dataObservableList.add(value);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new ServiceException("Could not create resource");
         }
     }
 
     /**
-     * Gets the data
+     * Gets the data by ids
      *
      * @param identifier the id for the data to find
      * @return the found data
-     * @throws SQLException
+     * @throws ServiceException
      */
-    public data getById(id identifier) throws SQLException {
-        return dao.queryForId(identifier);
+    public data getById(id identifier) throws ServiceException {
+        try {
+            return dao.queryForId(identifier);
+        } catch (SQLException ex) {
+            throw new ServiceException("Could not find resource by id");
+        }
     }
 }

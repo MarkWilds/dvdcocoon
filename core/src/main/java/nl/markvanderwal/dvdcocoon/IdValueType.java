@@ -1,4 +1,4 @@
-package nl.markvanderwal.dvdcocoon.models;
+package nl.markvanderwal.dvdcocoon;
 
 /**
  * @author Mark "Wilds" van der Wal

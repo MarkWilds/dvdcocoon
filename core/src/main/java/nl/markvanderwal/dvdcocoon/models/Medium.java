@@ -2,6 +2,7 @@ package nl.markvanderwal.dvdcocoon.models;
 
 import com.j256.ormlite.field.*;
 import com.j256.ormlite.table.*;
+import nl.markvanderwal.dvdcocoon.*;
 
 /**
  * @author Mark "Wilds" van der Wal
