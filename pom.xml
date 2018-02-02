@@ -10,8 +10,8 @@
 
     <modules>
         <module>core</module>
-        <module>master</module>
-        <module>slave</module>
+        <module>desktop</module>
+        <module>android</module>
     </modules>
 
     <properties>

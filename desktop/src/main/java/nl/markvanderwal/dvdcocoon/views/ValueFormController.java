@@ -4,8 +4,8 @@ import javafx.fxml.*;
 import javafx.scene.control.*;
 import nl.markvanderwal.dvdcocoon.models.*;
 import nl.markvanderwal.dvdcocoon.services.*;
+import org.apache.logging.log4j.*;
 
-import javax.inject.*;
 import java.net.*;
 import java.util.*;
 
@@ -14,6 +14,8 @@ import java.util.*;
  * @since 2-2-2018
  */
 public class ValueFormController extends AbstractFXMLViewController {
+
+    private static final Logger LOGGER = LogManager.getLogger(ValueFormController.class);
 
     private BaseService<? extends IdValueType, Integer> service;
 
@@ -51,7 +53,16 @@ public class ValueFormController extends AbstractFXMLViewController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        saveButton.setOnAction(actionEvent -> {
+            LOGGER.info("Test button pressed");
+        });
 
+        editButton.setOnAction(actionEvent -> {
+
+        });
+
+        deleteButton.setOnAction(actionEvent -> {
+        });
     }
 
     public void setValueName(String name) {

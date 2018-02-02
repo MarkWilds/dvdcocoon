@@ -101,6 +101,7 @@ public class MainFormController extends AbstractFXMLViewController {
 
         InputStream iconStream = getClass().getResourceAsStream("/icon.png");
 
+        stage.setResizable(false);
         stage.getIcons().add(new Image(iconStream));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle(name);
