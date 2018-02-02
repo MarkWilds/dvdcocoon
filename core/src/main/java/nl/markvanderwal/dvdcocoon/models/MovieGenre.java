@@ -20,7 +20,4 @@ public class MovieGenre {
 
     @DatabaseField(foreign = true, columnName = GENRE_ID_FIELD_NAME)
     private Genre genre;
-
-    public MovieGenre() {
-    }
 }

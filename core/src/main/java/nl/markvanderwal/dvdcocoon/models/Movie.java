@@ -29,10 +29,6 @@ public class Movie {
     @DatabaseField(canBeNull = false, foreign = true)
     private Medium medium;
 
-    public Movie(){
-
-    }
-
     public int getId() {
         return id;
     }
