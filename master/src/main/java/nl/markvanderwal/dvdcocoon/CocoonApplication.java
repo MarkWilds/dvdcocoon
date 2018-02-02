@@ -1,12 +1,10 @@
 package nl.markvanderwal.dvdcocoon;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+import javafx.application.*;
 import javafx.scene.image.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
+import javafx.stage.*;
+import nl.markvanderwal.dvdcocoon.dagger.*;
+import nl.markvanderwal.dvdcocoon.views.*;
 
 import java.io.*;
 
@@ -16,7 +14,7 @@ import java.io.*;
  */
 public class CocoonApplication extends Application {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException {
         launch(args);
     }
 
@@ -24,23 +22,9 @@ public class CocoonApplication extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("DVDCocoon");
 
-        initRootLayout(primaryStage);
-    }
-
-    private void initRootLayout(final Stage primaryStage) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("views/MainForm.fxml"));
-            BorderPane rootLayout = loader.load();
-
-            Scene scene = new Scene(rootLayout);
-            primaryStage.setScene(scene);
-
-            InputStream stream = getClass().getResourceAsStream("/icon.ico");
-            primaryStage.getIcons().add(new Image(stream));
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ControllerInjector injector = DaggerControllerInjector.create();
+        MainController controller = injector.mainController().get();
+        Stage mainStage = controller.createStage();
+        mainStage.show();
     }
 }

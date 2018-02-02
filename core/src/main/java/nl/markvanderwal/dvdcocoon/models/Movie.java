@@ -29,9 +29,6 @@ public class Movie {
     @DatabaseField(canBeNull = false, foreign = true)
     private Medium medium;
 
-    @ForeignCollectionField(eager = false)
-    private ForeignCollection<Genre> genres;
-
     public Movie(){
 
     }
@@ -82,13 +79,5 @@ public class Movie {
 
     public void setMedium(Medium medium) {
         this.medium = medium;
-    }
-
-    public ForeignCollection<Genre> getGenres() {
-        return genres;
-    }
-
-    public void setGenres(ForeignCollection<Genre> genres) {
-        this.genres = genres;
     }
 }
