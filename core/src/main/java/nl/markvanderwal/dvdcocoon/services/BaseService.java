@@ -6,6 +6,7 @@ import nl.markvanderwal.dvdcocoon.dal.*;
 import nl.markvanderwal.dvdcocoon.exceptions.*;
 
 import javax.inject.*;
+import javax.xml.ws.*;
 import java.sql.*;
 import java.util.*;
 
@@ -53,7 +54,7 @@ public abstract class BaseService<data, id> {
             dataObservableList.clear();
             dataObservableList.addAll(dataList);
         } catch (SQLException e) {
-            throw new ServiceException("Could not fetch data from remote");
+            throw new ServiceException("Kon geen data ophalen");
         }
     }
 
@@ -68,7 +69,7 @@ public abstract class BaseService<data, id> {
             dao.create(value);
             dataObservableList.add(value);
         } catch (SQLException e) {
-            throw new ServiceException("Could not create resource");
+            throw new ServiceException("Kon de waarde niet opslaan");
         }
     }
 
@@ -83,7 +84,34 @@ public abstract class BaseService<data, id> {
         try {
             return dao.queryForId(identifier);
         } catch (SQLException ex) {
-            throw new ServiceException("Could not find resource by id");
+            throw new ServiceException("Kon de waarde niet vinden");
+        }
+    }
+
+    /**
+     * deletes given value from the database
+     * @param value value to delete
+     * @throws ServiceException
+     */
+    public void delete(data value) throws ServiceException {
+        try {
+            dao.delete(value);
+            dataObservableList.remove(value);
+        } catch (SQLException ex) {
+            throw new ServiceException("Data kon niet verwijderd worden");
+        }
+    }
+
+    /**
+     * Updates given value
+     * @param value value to update
+     * @throws ServiceException
+     */
+    public void update(data value) throws ServiceException {
+        try {
+            dao.update(value);
+        } catch (SQLException ex) {
+            throw new ServiceException("Data kon niet bijgewerkt worden");
         }
     }
 }

@@ -84,7 +84,7 @@ public class MainFormController extends AbstractFXMLViewController {
         });
 
         mediumsButton.setOnAction(actionEvent -> {
-            showValueForm(actionEvent,"Mediums", mediumService, (id, name) -> {
+            showValueForm(actionEvent,"Media", mediumService, (id, name) -> {
                 Medium medium = new Medium();
                 medium.setName(name);
                 return medium;
