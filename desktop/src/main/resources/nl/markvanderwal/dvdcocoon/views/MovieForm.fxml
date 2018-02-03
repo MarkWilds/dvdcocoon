@@ -16,103 +16,115 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox HBox.hgrow="ALWAYS">
+            <HBox VBox.vgrow="ALWAYS">
                <children>
-                  <Label text="Film">
-                     <font>
-                        <Font name="System Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <AnchorPane VBox.vgrow="ALWAYS">
-                     <VBox.margin>
-                        <Insets bottom="4.0" left="4.0" top="4.0" />
-                     </VBox.margin>
+                  <VBox HBox.hgrow="ALWAYS">
                      <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <Label text="Film">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <AnchorPane VBox.vgrow="ALWAYS">
+                           <VBox.margin>
+                              <Insets left="4.0" top="4.0" />
+                           </VBox.margin>
                            <children>
-                              <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                              <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <GridPane vgap="16.0" VBox.vgrow="ALWAYS">
-                                      <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="232.0" minWidth="10.0" prefWidth="57.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="482.0" minWidth="10.0" prefWidth="482.0" />
-                                      </columnConstraints>
-                                      <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                      </rowConstraints>
+                                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
                                        <children>
-                                          <Label text="Naam:" />
-                                          <TextField fx:id="nameTextField" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
-                                          <Label text="Label:" GridPane.rowIndex="1" />
-                                          <TextField fx:id="labelTextField" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                                          <GridPane vgap="16.0" VBox.vgrow="ALWAYS">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="232.0" minWidth="10.0" prefWidth="57.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="482.0" minWidth="10.0" prefWidth="482.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label text="Naam:" />
+                                                <TextField fx:id="nameTextField" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
+                                                <Label text="Label:" GridPane.rowIndex="1" />
+                                                <TextField fx:id="labelTextField" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                                             </children>
+                                             <VBox.margin>
+                                                <Insets bottom="4.0" />
+                                             </VBox.margin>
+                                          </GridPane>
+                                          <Label text="Cast:">
+                                             <VBox.margin>
+                                                <Insets top="4.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <TextArea fx:id="castTextArea" VBox.vgrow="ALWAYS" />
+                                          <Label text="Beschrijving">
+                                             <VBox.margin>
+                                                <Insets top="4.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <TextArea fx:id="descriptionTextArea" VBox.vgrow="ALWAYS" />
                                        </children>
-                                       <VBox.margin>
-                                          <Insets bottom="4.0" />
-                                       </VBox.margin>
-                                    </GridPane>
-                                    <Label text="Cast:">
-                                       <VBox.margin>
-                                          <Insets top="4.0" />
-                                       </VBox.margin>
-                                    </Label>
-                                    <TextArea fx:id="castTextArea" VBox.vgrow="ALWAYS" />
-                                    <Label text="Beschrijving">
-                                       <VBox.margin>
-                                          <Insets top="4.0" />
-                                       </VBox.margin>
-                                    </Label>
-                                    <TextArea fx:id="descriptionTextArea" VBox.vgrow="ALWAYS" />
+                                       <padding>
+                                          <Insets left="4.0" right="4.0" top="4.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox prefWidth="196.0" spacing="4.0">
+                                       <children>
+                                          <Button fx:id="mediumsButton" mnemonicParsing="false" text="Medium:" />
+                                          <ListView fx:id="mediumListView" />
+                                          <Button fx:id="genresButton" mnemonicParsing="false" text="Genres:">
+                                             <VBox.margin>
+                                                <Insets top="8.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <ListView fx:id="genresListView" />
+                                       </children>
+                                       <padding>
+                                          <Insets left="4.0" top="4.0" />
+                                       </padding>
+                                    </VBox>
                                  </children>
-                                 <padding>
-                                    <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-                                 </padding>
-                              </VBox>
-                              <VBox prefWidth="196.0" spacing="4.0">
-                                 <children>
-                                    <Button fx:id="mediumButton" mnemonicParsing="false" text="Medium:" />
-                                    <ListView fx:id="mediumListView" />
-                                    <Button fx:id="genresButton" mnemonicParsing="false" text="Genres:">
-                                       <VBox.margin>
-                                          <Insets top="8.0" />
-                                       </VBox.margin>
-                                    </Button>
-                                    <ListView fx:id="genresListView" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="4.0" left="4.0" top="4.0" />
-                                 </padding>
-                              </VBox>
+                              </HBox>
                            </children>
-                        </HBox>
+                        </AnchorPane>
                      </children>
-                  </AnchorPane>
-               </children>
-               <padding>
-                  <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-               </padding>
-            </VBox>
-            <VBox prefWidth="128.0" spacing="8.0">
-               <children>
-                  <Label text="Acties">
-                     <font>
-                        <Font name="System Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <AnchorPane>
+                     <padding>
+                        <Insets left="4.0" right="4.0" top="4.0" />
+                     </padding>
+                  </VBox>
+                  <VBox prefWidth="128.0" spacing="8.0">
                      <children>
-                        <Button fx:id="saveEditButton" mnemonicParsing="false" text="BewerkOpslaan" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                        <Button fx:id="deleteButton" layoutY="39.0" mnemonicParsing="false" text="Verwijderen" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                        <Label text="Acties">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <AnchorPane>
+                           <children>
+                              <Button fx:id="saveEditButton" mnemonicParsing="false" text="BewerkOpslaan" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                              <Button fx:id="deleteButton" layoutY="39.0" mnemonicParsing="false" text="Verwijderen" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
                      </children>
-                  </AnchorPane>
+                     <padding>
+                        <Insets bottom="4.0" left="4.0" right="6.0" top="4.0" />
+                     </padding>
+                  </VBox>
                </children>
+            </HBox>
+            <Label fx:id="messageLabel" textFill="#c60707" VBox.vgrow="ALWAYS">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
                <padding>
-                  <Insets bottom="4.0" left="4.0" right="6.0" top="4.0" />
+                  <Insets left="8.0" />
                </padding>
-            </VBox>
+            </Label>
          </children>
-      </HBox>
+      </VBox>
    </children>
 </AnchorPane>

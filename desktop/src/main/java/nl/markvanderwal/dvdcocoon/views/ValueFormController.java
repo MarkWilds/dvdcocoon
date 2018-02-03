@@ -17,7 +17,7 @@ import java.util.*;
  * @author Mark "Wilds" van der Wal
  * @since 2-2-2018
  */
-public class ValueFormController extends AbstractFXMLViewController {
+public class ValueFormController extends CocoonController {
 
     private static final Logger LOGGER = LogManager.getLogger(ValueFormController.class);
 
@@ -42,9 +42,11 @@ public class ValueFormController extends AbstractFXMLViewController {
     @FXML
     private Button deleteButton;
 
-    public ValueFormController(BaseService service, IdValueTypeFactory factory) {
+    public ValueFormController(BaseService service, Class<? extends IdValueType> valueType) {
         this.service = service;
-        this.factory = factory;
+        this.factory = (id, n) -> {
+            return IdValueTypeFactory.create(id, n, valueType);
+        };
     }
 
     @Override
@@ -60,22 +62,19 @@ public class ValueFormController extends AbstractFXMLViewController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         dataListView.setItems(service.bind());
-        saveButton.setOnAction(this::saveValue);
-        editButton.setOnAction(this::editValue);
-        deleteButton.setOnAction(this::deleteValue);
-
-        saveButton.setDisable(true);
-        editButton.setDisable(true);
-        deleteButton.setDisable(true);
+        saveButton.setOnAction(this::onSaveValuePressed);
+        editButton.setOnAction(this::onEditValuePressed);
+        deleteButton.setOnAction(this::onDeleteValuePressed);
 
         dataListView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 editButton.setDisable(false);
                 deleteButton.setDisable(false);
-                onValueSelected(newValue);
+                nameTextField.setText(newValue.getName());
             } else {
                 editButton.setDisable(true);
                 deleteButton.setDisable(true);
+                nameTextField.setText("");
             }
         });
 
@@ -94,7 +93,7 @@ public class ValueFormController extends AbstractFXMLViewController {
         }
     }
 
-    private void saveValue(ActionEvent event) {
+    private void onSaveValuePressed(ActionEvent event) {
         String name = nameTextField.getText();
 
         if (!Strings.isNullOrEmpty(name)) {
@@ -103,13 +102,14 @@ public class ValueFormController extends AbstractFXMLViewController {
             try {
                 service.create(value);
                 nameTextField.setText("");
+                dataListView.getSelectionModel().clearSelection();
             } catch (ServiceException e) {
                 LOGGER.error(String.format("%s - %s", e.getMessage(), name));
             }
         }
     }
 
-    private void editValue(ActionEvent event) {
+    private void onEditValuePressed(ActionEvent event) {
         ObservableList<Integer> indices = dataListView.getSelectionModel().getSelectedIndices();
         String name = nameTextField.getText();
 
@@ -120,14 +120,14 @@ public class ValueFormController extends AbstractFXMLViewController {
 
             try {
                 service.update(value);
-                dataListView.refresh();
+                dataListView.getSelectionModel().select(firstSelected);
             } catch (ServiceException e) {
                 LOGGER.error(String.format("%s - %s", e.getMessage(), value.getName()));
             }
         }
     }
 
-    private void deleteValue(ActionEvent event) {
+    private void onDeleteValuePressed(ActionEvent event) {
         ObservableList<Integer> indices = dataListView.getSelectionModel().getSelectedIndices();
         if (indices.size() > 0) {
             int firstSelected = indices.get(0);
@@ -142,11 +142,7 @@ public class ValueFormController extends AbstractFXMLViewController {
         }
     }
 
-    private void onValueSelected(IdValueType value) {
-        nameTextField.setText(value.getName());
-    }
-
     public void setValueName(String name) {
-        valueLabel.setText(name);
+        valueLabel.setText(name + ":");
     }
 }

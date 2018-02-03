@@ -1,7 +1,10 @@
 package nl.markvanderwal.dvdcocoon.services;
 
 import com.j256.ormlite.dao.*;
+import javafx.beans.Observable;
+import javafx.beans.property.*;
 import javafx.collections.*;
+import javafx.util.*;
 import nl.markvanderwal.dvdcocoon.dal.*;
 import nl.markvanderwal.dvdcocoon.exceptions.*;
 
@@ -110,6 +113,9 @@ public abstract class BaseService<data, id> {
     public void update(data value) throws ServiceException {
         try {
             dao.update(value);
+
+            int index = dataObservableList.indexOf(value);
+            dataObservableList.set(index, value);
         } catch (SQLException ex) {
             throw new ServiceException("Data kon niet bijgewerkt worden");
         }

@@ -15,9 +15,9 @@ public class MovieGenre {
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh=true, columnName = MOVIE_ID_FIELD_NAME)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = MOVIE_ID_FIELD_NAME)
     private Movie movie;
 
-    @DatabaseField(foreign = true, foreignAutoRefresh=true, columnName = GENRE_ID_FIELD_NAME)
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = GENRE_ID_FIELD_NAME)
     private Genre genre;
 }

@@ -27,9 +27,9 @@
                   <VBox layoutX="8.0" layoutY="8.0" spacing="8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label text="Acties:" />
-                        <Button fx:id="saveButton" mnemonicParsing="false" prefWidth="128.0" text="Bewaar" />
-                        <Button fx:id="editButton" mnemonicParsing="false" prefWidth="128.0" text="Bewerk" />
-                        <Button fx:id="deleteButton" mnemonicParsing="false" prefWidth="128.0" text="Verwijder" />
+                        <Button fx:id="saveButton" disable="true" mnemonicParsing="false" prefWidth="128.0" text="Bewaar" />
+                        <Button fx:id="editButton" disable="true" mnemonicParsing="false" prefWidth="128.0" text="Bewerk" />
+                        <Button fx:id="deleteButton" disable="true" mnemonicParsing="false" prefWidth="128.0" text="Verwijder" />
                      </children>
                   </VBox>
                   <VBox layoutX="16.0" layoutY="439.0" prefWidth="117.0" spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">

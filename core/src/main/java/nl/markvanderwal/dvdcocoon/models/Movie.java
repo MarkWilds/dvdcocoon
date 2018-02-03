@@ -1,8 +1,8 @@
 package nl.markvanderwal.dvdcocoon.models;
 
-import com.j256.ormlite.dao.*;
 import com.j256.ormlite.field.*;
 import com.j256.ormlite.table.*;
+import nl.markvanderwal.dvdcocoon.*;
 
 /**
  * @author Mark "Wilds" van der Wal
@@ -26,7 +26,7 @@ public class Movie {
     @DatabaseField
     private String description;
 
-    @DatabaseField(canBeNull = false, foreign = true, foreignAutoCreate = true, foreignAutoRefresh=true)
+    @DatabaseField(canBeNull = true, foreign = true) //foreignAutoCreate = true, foreignAutoRefresh=true
     private Medium medium;
 
     public int getId() {

@@ -1,9 +1,13 @@
 package nl.markvanderwal.dvdcocoon.views;
 
+import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
+import javafx.scene.image.*;
 import javafx.stage.*;
+import nl.markvanderwal.dvdcocoon.*;
 import nl.markvanderwal.dvdcocoon.dagger.*;
+import nl.markvanderwal.dvdcocoon.services.*;
 
 import java.io.*;
 import java.net.*;
@@ -16,6 +20,7 @@ import java.util.*;
 abstract class AbstractFXMLViewController implements Initializable {
 
     protected DesktopInjector injector;
+    protected Stage stage;
     private Parent fxmlRoot;
 
     /**
@@ -79,7 +84,7 @@ abstract class AbstractFXMLViewController implements Initializable {
         this.injector = injector;
         final Parent root = loadFxml();
 
-        Stage stage = parent;
+        stage = parent;
         if (stage == null) {
             stage = new Stage();
         }
@@ -88,5 +93,4 @@ abstract class AbstractFXMLViewController implements Initializable {
         stage.sizeToScene();
         return stage;
     }
-
 }

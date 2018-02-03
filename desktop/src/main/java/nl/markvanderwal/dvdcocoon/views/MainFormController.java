@@ -3,18 +3,14 @@ package nl.markvanderwal.dvdcocoon.views;
 import javafx.beans.property.*;
 import javafx.event.*;
 import javafx.fxml.*;
-import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.image.*;
 import javafx.stage.*;
-import nl.markvanderwal.dvdcocoon.*;
 import nl.markvanderwal.dvdcocoon.exceptions.*;
 import nl.markvanderwal.dvdcocoon.models.*;
 import nl.markvanderwal.dvdcocoon.services.*;
 import org.apache.logging.log4j.*;
 
 import javax.inject.*;
-import java.io.*;
 import java.net.*;
 import java.util.*;
 
@@ -22,7 +18,7 @@ import java.util.*;
  * @author Mark "Wilds" van der Wal
  * @since 1-2-2018
  */
-public class MainFormController extends AbstractFXMLViewController {
+public class MainFormController extends CocoonController {
 
     private static final Logger LOGGER = LogManager.getLogger(MainFormController.class);
 
@@ -82,53 +78,25 @@ public class MainFormController extends AbstractFXMLViewController {
         newMovieButton.setOnAction(this::showMovieForm);
 
         mediumsButton.setOnAction(actionEvent -> {
-            showValueForm(actionEvent,"Media", mediumService, (id, name) -> {
-                Medium medium = new Medium();
-                medium.setName(name);
-                return medium;
-            });
+            showValueForm(actionEvent, "Media", mediumService, Medium.class);
         });
 
         genresButton.setOnAction(actionEvent -> {
-            showValueForm(actionEvent,"Genres", genreService, (id, name) -> {
-                Genre genre = new Genre();
-                genre.setName(name);
-                return genre;
-            });
+            showValueForm(actionEvent, "Genres", genreService, Genre.class);
         });
 
-        movieToolbar.setText(String.format("Films geladen: %s", movieTable.getItems().size()));
-    }
+        movieToolbar.setText(String.format("%s films geladen", movieTable.getItems().size()));
 
-    private void showMovieForm(ActionEvent event) {
-        MovieFormController controller = injector
-                .movieFormController().get();
-        Stage stage = controller.createStage(injector);
-
-        InputStream iconStream = getClass().getResourceAsStream("/icon.png");
-
-        stage.setResizable(false);
-        stage.getIcons().add(new Image(iconStream));
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Film");
-        stage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-        stage.showAndWait();
-    }
-
-    private void showValueForm(ActionEvent event, String name,
-                               BaseService service, IdValueTypeFactory factory) {
-        ValueFormController controller = new ValueFormController(service, factory);
-        Stage stage = controller.createStage(injector);
-        controller.setValueName(name);
-
-        InputStream iconStream = getClass().getResourceAsStream("/icon.png");
-
-        stage.setResizable(false);
-        stage.getIcons().add(new Image(iconStream));
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle(name);
-        stage.initOwner(((Node)event.getSource()).getScene().getWindow() );
-        stage.showAndWait();
+        movieTable.setRowFactory(tv -> {
+            TableRow<Movie> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    Movie rowData = row.getItem();
+                    showMovieForm(event, rowData);
+                }
+            });
+            return row;
+        });
     }
 
     private void initializeButtonIcons() {
@@ -141,7 +109,12 @@ public class MainFormController extends AbstractFXMLViewController {
         });
 
         mediumColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getMedium().getName());
+            Medium medium = cellData.getValue().getMedium();
+            String mediumText = "N.V.T";
+            if(medium != null ) {
+                mediumText = medium.getName();
+            }
+            return new SimpleStringProperty(mediumText);
         });
 
         nameColumn.setCellValueFactory(cellData -> {
@@ -149,7 +122,7 @@ public class MainFormController extends AbstractFXMLViewController {
         });
 
         genresColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty("Nog geen genres!");
+            return new SimpleStringProperty("N.V.T");
         });
 
         movieTable.setItems(movieService.bind());
@@ -159,4 +132,5 @@ public class MainFormController extends AbstractFXMLViewController {
             LOGGER.error("Gefaald om de film data op te halen!");
         }
     }
+
 }
