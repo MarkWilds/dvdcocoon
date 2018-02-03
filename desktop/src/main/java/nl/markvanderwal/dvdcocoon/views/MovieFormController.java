@@ -2,6 +2,7 @@ package nl.markvanderwal.dvdcocoon.views;
 
 import javafx.fxml.*;
 import javafx.scene.control.*;
+import javafx.scene.image.*;
 import nl.markvanderwal.dvdcocoon.exceptions.*;
 import nl.markvanderwal.dvdcocoon.models.*;
 import nl.markvanderwal.dvdcocoon.services.*;
@@ -165,7 +166,7 @@ public class MovieFormController extends CocoonController {
         if(movieService.isMovieValid(currentMovie)) {
             try {
                 movieService.create(currentMovie);
-                messageLabel.setText("");
+                messageLabel.setText("Film opgeslagen!");
                 initializeMode();
                 updateDirty(false);
             } catch (ServiceException e) {
@@ -191,11 +192,31 @@ public class MovieFormController extends CocoonController {
     }
 
     private void onDeleteMoviePressed() {
-        try {
-            movieService.delete(currentMovie);
-            stage.close();
-        } catch (ServiceException e) {
-            LOGGER.error(String.format("Film met label %s kon niet worden verwijderd", currentMovie.getLabel()));
+        showDialog(() -> {
+            try {
+                stage.close();
+                movieService.delete(currentMovie);
+            } catch (ServiceException e) {
+                LOGGER.error(String.format("Film met label %s kon niet worden verwijderd", currentMovie.getLabel()));
+            }
+        });
+    }
+
+    private void showDialog(Runnable action) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmatie");
+        alert.setHeaderText("Film verwijderen");
+        alert.setContentText("Weet u het zeker??");
+        alert.initOwner(stage.getScene().getWindow());
+
+        ImageView image = new ImageView(getClass().getResource("/icon.png").toString());
+        image.setFitHeight(32);
+        image.setFitWidth(32);
+        alert.setGraphic(image);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            action.run();
         }
     }
 
