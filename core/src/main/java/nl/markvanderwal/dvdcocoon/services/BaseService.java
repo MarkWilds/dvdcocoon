@@ -85,7 +85,13 @@ public abstract class BaseService<data, id> {
      */
     public data getById(id identifier) throws ServiceException {
         try {
-            return dao.queryForId(identifier);
+            data value = dao.queryForId(identifier);
+            if(!dataObservableList.contains(value)) {
+                dataObservableList.add(value);
+            }
+
+            int index = dataObservableList.indexOf(value);
+            return dataObservableList.get(index);
         } catch (SQLException ex) {
             throw new ServiceException("Kon de waarde niet vinden");
         }

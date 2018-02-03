@@ -1,10 +1,10 @@
 package nl.markvanderwal.dvdcocoon.views;
 
+import com.google.common.base.*;
 import javafx.beans.property.*;
-import javafx.event.*;
+import javafx.collections.transformation.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
-import javafx.stage.*;
 import nl.markvanderwal.dvdcocoon.exceptions.*;
 import nl.markvanderwal.dvdcocoon.models.*;
 import nl.markvanderwal.dvdcocoon.services.*;
@@ -25,6 +25,8 @@ public class MainFormController extends CocoonController {
     private final MovieService movieService;
     private final MediumService mediumService;
     private final GenreService genreService;
+
+    private FilteredList<Movie> filteredMovies;
 
     @FXML
     private TableView movieTable;
@@ -53,6 +55,29 @@ public class MainFormController extends CocoonController {
     @FXML
     private Button genresButton;
 
+    /**************** FILTER *****/
+
+    @FXML
+    private CheckBox labelFilter;
+
+    @FXML
+    private CheckBox mediumFilter;
+
+    @FXML
+    private CheckBox genreFilter;
+
+    @FXML
+    private CheckBox actorFilter;
+
+    @FXML
+    private Button searchButton;
+
+    @FXML
+    private Button clearButton;
+
+    @FXML
+    private TextField searchTextInput;
+
     @Inject
     public MainFormController(MovieService movieService, MediumService mediumService, GenreService genreService) {
         this.movieService = movieService;
@@ -74,6 +99,7 @@ public class MainFormController extends CocoonController {
     public void initialize(URL location, ResourceBundle resources) {
         initializeButtonIcons();
         initializeTableView();
+        initializeFilterView();
 
         newMovieButton.setOnAction(this::showMovieForm);
 
@@ -104,6 +130,9 @@ public class MainFormController extends CocoonController {
     }
 
     private void initializeTableView() {
+        movieTable.setEditable(false);
+        movieTable.setPlaceholder(new Label("Geen films gevonden"));
+
         labelColumn.setCellValueFactory(cellData -> {
             return new SimpleStringProperty(cellData.getValue().getLabel());
         });
@@ -111,7 +140,7 @@ public class MainFormController extends CocoonController {
         mediumColumn.setCellValueFactory(cellData -> {
             Medium medium = cellData.getValue().getMedium();
             String mediumText = "N.V.T";
-            if(medium != null ) {
+            if (medium != null) {
                 mediumText = medium.getName();
             }
             return new SimpleStringProperty(mediumText);
@@ -125,7 +154,11 @@ public class MainFormController extends CocoonController {
             return new SimpleStringProperty("N.V.T");
         });
 
-        movieTable.setItems(movieService.bind());
+        filteredMovies = new FilteredList<>(movieService.bind(), this::movieFilter);
+        SortedList<Movie> sortedList = new SortedList<>(filteredMovies);
+        sortedList.comparatorProperty().bind(movieTable.comparatorProperty());
+        movieTable.setItems(sortedList);
+
         try {
             movieService.fetch();
         } catch (ServiceException e) {
@@ -133,4 +166,44 @@ public class MainFormController extends CocoonController {
         }
     }
 
+    private void initializeFilterView() {
+        clearButton.setOnAction(actionEvent -> {
+            String oldValue = searchTextInput.getText();
+            if (!Strings.isNullOrEmpty(oldValue)) {
+                searchTextInput.setText("");
+                filteredMovies.setPredicate(this::movieFilter);
+            }
+        });
+
+        searchButton.setOnAction(actionEvent -> {
+            filteredMovies.setPredicate(this::movieFilter);
+        });
+    }
+
+    private boolean movieFilter(Movie movie) {
+        String searchText = searchTextInput.getText();
+        if (Strings.isNullOrEmpty(searchText))
+            return true;
+
+        boolean filter = false;
+
+        if (labelFilter.isSelected()) {
+            filter = filter || movie.getLabel().contains(searchText);
+        }
+
+        if (actorFilter.isSelected()) {
+            filter = filter || movie.getActors().contains(searchText);
+        }
+
+        Medium medium = movie.getMedium();
+        if (medium != null && mediumFilter.isSelected()) {
+            filter = filter || medium.getName().contains(searchText);
+        }
+
+        if (!filter) {
+            filter = movie.getName().contains(searchText);
+        }
+
+        return filter;
+    }
 }

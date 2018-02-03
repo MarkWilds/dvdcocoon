@@ -26,7 +26,7 @@ public class Movie {
     @DatabaseField
     private String description;
 
-    @DatabaseField(canBeNull = true, foreign = true) //foreignAutoCreate = true, foreignAutoRefresh=true
+    @DatabaseField(canBeNull = true, foreign = true, foreignAutoRefresh = true)
     private Medium medium;
 
     public int getId() {
@@ -75,5 +75,20 @@ public class Movie {
 
     public void setMedium(Medium medium) {
         this.medium = medium;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other == null) return false;
+        if(other == this) return true;
+        if(!(other instanceof Movie)) return false;
+
+        Movie otherMovie = (Movie)other;
+        return otherMovie.getId() == getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return getId();
     }
 }

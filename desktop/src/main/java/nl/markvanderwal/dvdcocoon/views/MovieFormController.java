@@ -26,7 +26,6 @@ public class MovieFormController extends CocoonController {
     private MovieGenreService movieGenreService;
 
     private Movie currentMovie;
-    private String saveEditText;
 
     @FXML
     private Label messageLabel;
@@ -103,43 +102,83 @@ public class MovieFormController extends CocoonController {
         try {
             genreService.fetch();
         } catch (ServiceException ex) {
-            LOGGER.error("Kon media data niet ophalen!");
+            LOGGER.error("Kon genre data niet ophalen!");
         }
 
         // set events
         nameTextField.textProperty().addListener( (obs, oldValue, newValue) -> {
-            updateDirty(!oldValue.equals(newValue));
-            currentMovie.setName(newValue);
+            updateDirty(oldValue, newValue);
+
+            if(newValue != null) {
+                currentMovie.setName(newValue);
+            }
         });
 
         labelTextField.textProperty().addListener( (obs, oldValue, newValue) -> {
-            updateDirty(!oldValue.equals(newValue));
-            currentMovie.setLabel(newValue);
+            updateDirty(oldValue, newValue);
+
+            if(newValue != null) {
+                currentMovie.setLabel(newValue);
+            }
         });
 
         castTextArea.textProperty().addListener( (obs, oldValue, newValue) -> {
-            updateDirty(!oldValue.equals(newValue));
-            currentMovie.setActors(newValue);
+            updateDirty(oldValue, newValue);
+
+            if(newValue != null) {
+                currentMovie.setActors(newValue);
+            }
         });
 
         descriptionTextArea.textProperty().addListener( (obs, oldValue, newValue) -> {
-            updateDirty(!oldValue.equals(newValue));
-            currentMovie.setDescription(newValue);
+            updateDirty(oldValue, newValue);
+
+            if(newValue != null) {
+                currentMovie.setDescription(newValue);
+            }
         });
+
+        // config medium listview
+        int index = mediumListView.getItems().indexOf(currentMovie.getMedium());
+        if(index >= 0) {
+            mediumListView.getSelectionModel().select(index);
+        }
+
+        mediumListView.getSelectionModel().selectedItemProperty().addListener( (obs, oldValue, newValue) -> {
+            updateDirty(oldValue, newValue);
+
+            if(newValue != null) {
+                currentMovie.setMedium(newValue);
+            }
+        });
+
+        updateDirty(false);
     }
 
-    private void updateDirty(boolean dirty) {
-        if(dirty) {
-            saveEditButton.setText(saveEditText + "*");
+    private <T> void updateDirty(T left, T right) {
+        boolean dirty = !isEquals(left, right);
+        updateDirty(dirty);
+    }
+
+    private void updateDirty(boolean isDirty) {
+        if(isDirty) {
+            saveEditButton.setDisable(false);
         } else {
-            saveEditButton.setText(saveEditText);
+            saveEditButton.setDisable(true);
+        }
+    }
+
+    private <T> boolean isEquals(T left, T right) {
+        if(left == null) {
+            return left == right;
+        } else {
+            return left.equals(right);
         }
     }
 
     private void initializeMode() {
         if(currentMovie != null) {
-            saveEditText = "Bewerken";
-            saveEditButton.setText(saveEditText);
+            saveEditButton.setText("Bewerken");
             saveEditButton.setDisable(false);
             saveEditButton.setOnAction( actionEvent -> onUpdateMoviePressed());
 
@@ -153,8 +192,7 @@ public class MovieFormController extends CocoonController {
             descriptionTextArea.setText(currentMovie.getDescription());
         } else {
             currentMovie = new Movie();
-            saveEditText = "Opslaan";
-            saveEditButton.setText(saveEditText);
+            saveEditButton.setText("Opslaan");
             saveEditButton.setOnAction( actionEvent -> onCreateMoviePressed());
 
             deleteButton.setDisable(true);

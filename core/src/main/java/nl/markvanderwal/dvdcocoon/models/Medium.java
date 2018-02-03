@@ -37,4 +37,19 @@ public class Medium implements IdValueType {
     public String toString() {
         return getName();
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other == null) return false;
+        if(other == this) return true;
+        if(!(other instanceof Medium)) return false;
+
+        Medium otherMedium = (Medium)other;
+        return otherMedium.getId() == getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return getId();
+    }
 }

@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -15,7 +16,10 @@
          <children>
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label fx:id="valueLabel" text="IdValueType" />
+                  <Label fx:id="valueLabel" text="IdValueType">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font></Label>
                   <ListView fx:id="dataListView" VBox.vgrow="ALWAYS" />
                </children>
                <padding>
@@ -26,7 +30,10 @@
                <children>
                   <VBox layoutX="8.0" layoutY="8.0" spacing="8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <Label text="Acties:" />
+                        <Label text="Acties:">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font></Label>
                         <Button fx:id="saveButton" disable="true" mnemonicParsing="false" prefWidth="128.0" text="Bewaar" />
                         <Button fx:id="editButton" disable="true" mnemonicParsing="false" prefWidth="128.0" text="Bewerk" />
                         <Button fx:id="deleteButton" disable="true" mnemonicParsing="false" prefWidth="128.0" text="Verwijder" />

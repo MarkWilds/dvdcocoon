@@ -37,4 +37,19 @@ public class Genre implements IdValueType {
     public String toString() {
         return getName();
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other == null) return false;
+        if(other == this) return true;
+        if(!(other instanceof Genre)) return false;
+
+        Genre otherGenre = (Genre)other;
+        return otherGenre.getId() == getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return getId();
+    }
 }
