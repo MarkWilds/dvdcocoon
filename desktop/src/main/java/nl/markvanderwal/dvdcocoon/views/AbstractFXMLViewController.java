@@ -15,6 +15,7 @@ import java.util.*;
  */
 abstract class AbstractFXMLViewController implements Initializable {
 
+    protected DesktopInjector injector;
     private Parent fxmlRoot;
 
     /**
@@ -67,18 +68,19 @@ abstract class AbstractFXMLViewController implements Initializable {
     /**
      * @return New stage using a scene with the root node from the FXML file.
      */
-    public Stage createStage() {
-        return createStage(null);
+    public Stage createStage(final DesktopInjector injector) {
+        return createStage(null, injector);
     }
 
     /**
      * @return New stage using a scene with the root node from the FXML file.
      */
-    public Stage createStage(final Stage parent) {
+    public Stage createStage(final Stage parent, final DesktopInjector injector) {
+        this.injector = injector;
         final Parent root = loadFxml();
 
         Stage stage = parent;
-        if(stage == null) {
+        if (stage == null) {
             stage = new Stage();
         }
 

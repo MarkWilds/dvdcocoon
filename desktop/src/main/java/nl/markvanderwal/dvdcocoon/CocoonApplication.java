@@ -25,7 +25,7 @@ public class CocoonApplication extends Application {
     public void start(Stage primaryStage) {
         DesktopInjector injector = DaggerDesktopInjector.create();
         MainFormController controller = injector.mainFormController().get();
-        Stage mainStage = controller.createStage(primaryStage);
+        Stage mainStage = controller.createStage(primaryStage, injector);
 
         InputStream iconStream = getClass().getResourceAsStream("/icon.png");
         mainStage.getIcons().add(new Image(iconStream));

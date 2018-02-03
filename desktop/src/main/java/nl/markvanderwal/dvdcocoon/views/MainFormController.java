@@ -79,9 +79,7 @@ public class MainFormController extends AbstractFXMLViewController {
         initializeButtonIcons();
         initializeTableView();
 
-        newMovieButton.setOnAction(actionEvent -> {
-            LOGGER.info("Test button pressed");
-        });
+        newMovieButton.setOnAction(this::showMovieForm);
 
         mediumsButton.setOnAction(actionEvent -> {
             showValueForm(actionEvent,"Media", mediumService, (id, name) -> {
@@ -102,10 +100,25 @@ public class MainFormController extends AbstractFXMLViewController {
         movieToolbar.setText(String.format("Films geladen: %s", movieTable.getItems().size()));
     }
 
+    private void showMovieForm(ActionEvent event) {
+        MovieFormController controller = injector
+                .movieFormController().get();
+        Stage stage = controller.createStage(injector);
+
+        InputStream iconStream = getClass().getResourceAsStream("/icon.png");
+
+        stage.setResizable(false);
+        stage.getIcons().add(new Image(iconStream));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Film");
+        stage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+        stage.showAndWait();
+    }
+
     private void showValueForm(ActionEvent event, String name,
                                BaseService service, IdValueTypeFactory factory) {
         ValueFormController controller = new ValueFormController(service, factory);
-        Stage stage = controller.createStage();
+        Stage stage = controller.createStage(injector);
         controller.setValueName(name);
 
         InputStream iconStream = getClass().getResourceAsStream("/icon.png");

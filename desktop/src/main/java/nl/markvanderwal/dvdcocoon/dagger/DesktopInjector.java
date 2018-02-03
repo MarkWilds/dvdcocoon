@@ -14,4 +14,5 @@ import javax.inject.*;
 public interface DesktopInjector {
 
     Provider<MainFormController> mainFormController();
+    Provider<MovieFormController> movieFormController();
 }
