@@ -168,11 +168,8 @@ public class MainFormController extends CocoonController {
 
     private void initializeFilterView() {
         clearButton.setOnAction(actionEvent -> {
-            String oldValue = searchTextInput.getText();
-            if (!Strings.isNullOrEmpty(oldValue)) {
-                searchTextInput.setText("");
-                filteredMovies.setPredicate(this::movieFilter);
-            }
+            searchTextInput.setText("");
+            filteredMovies.setPredicate(movie -> true);
         });
 
         searchButton.setOnAction(actionEvent -> {
@@ -181,27 +178,33 @@ public class MainFormController extends CocoonController {
     }
 
     private boolean movieFilter(Movie movie) {
+        boolean anySelected = labelFilter.isSelected() ||
+                actorFilter.isSelected() ||
+                mediumFilter.isSelected();
+
         String searchText = searchTextInput.getText();
         if (Strings.isNullOrEmpty(searchText))
             return true;
 
         boolean filter = false;
 
+        if (!anySelected) {
+            filter = movie.getName().contains(searchText);
+        }
+
         if (labelFilter.isSelected()) {
             filter = filter || movie.getLabel().contains(searchText);
         }
 
-        if (actorFilter.isSelected()) {
+        if (actorFilter.isSelected()
+                && !Strings.isNullOrEmpty(movie.getActors())) {
             filter = filter || movie.getActors().contains(searchText);
         }
 
         Medium medium = movie.getMedium();
-        if (medium != null && mediumFilter.isSelected()) {
+        if (mediumFilter.isSelected()
+                && medium != null && !Strings.isNullOrEmpty(medium.getName())) {
             filter = filter || medium.getName().contains(searchText);
-        }
-
-        if (!filter) {
-            filter = movie.getName().contains(searchText);
         }
 
         return filter;
