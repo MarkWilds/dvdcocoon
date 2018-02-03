@@ -20,4 +20,28 @@ public class MovieGenre {
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = GENRE_ID_FIELD_NAME)
     private Genre genre;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+    }
+
+    public Genre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(Genre genre) {
+        this.genre = genre;
+    }
 }

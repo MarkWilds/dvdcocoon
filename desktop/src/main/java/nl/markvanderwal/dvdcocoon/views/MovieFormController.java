@@ -1,8 +1,12 @@
 package nl.markvanderwal.dvdcocoon.views;
 
+import javafx.beans.property.*;
+import javafx.beans.value.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.*;
 import javafx.scene.image.*;
+import javafx.util.*;
 import nl.markvanderwal.dvdcocoon.exceptions.*;
 import nl.markvanderwal.dvdcocoon.models.*;
 import nl.markvanderwal.dvdcocoon.services.*;
@@ -69,6 +73,10 @@ public class MovieFormController extends CocoonController {
         this.movieGenreService = movieGenreService;
     }
 
+    public void setMovie(Movie movie) {
+        currentMovie = movie;
+    }
+
     @Override
     protected URL getFxmlResourceUrl() {
         return getClass().getResource("MovieForm.fxml");
@@ -93,98 +101,76 @@ public class MovieFormController extends CocoonController {
             showValueForm(actionEvent, "Genres", genreService, Genre.class);
         });
 
-        try {
-            mediumService.fetch();
-        } catch (ServiceException ex) {
-            LOGGER.error("Kon media data niet ophalen!");
-        }
-
-        try {
-            genreService.fetch();
-        } catch (ServiceException ex) {
-            LOGGER.error("Kon genre data niet ophalen!");
-        }
-
         // set events
-        nameTextField.textProperty().addListener( (obs, oldValue, newValue) -> {
+        nameTextField.textProperty().addListener((obs, oldValue, newValue) -> {
             updateDirty(oldValue, newValue);
 
-            if(newValue != null) {
+            if (newValue != null) {
                 currentMovie.setName(newValue);
             }
         });
 
-        labelTextField.textProperty().addListener( (obs, oldValue, newValue) -> {
+        labelTextField.textProperty().addListener((obs, oldValue, newValue) -> {
             updateDirty(oldValue, newValue);
 
-            if(newValue != null) {
+            if (newValue != null) {
                 currentMovie.setLabel(newValue);
             }
         });
 
-        castTextArea.textProperty().addListener( (obs, oldValue, newValue) -> {
+        castTextArea.textProperty().addListener((obs, oldValue, newValue) -> {
             updateDirty(oldValue, newValue);
 
-            if(newValue != null) {
+            if (newValue != null) {
                 currentMovie.setActors(newValue);
             }
         });
 
-        descriptionTextArea.textProperty().addListener( (obs, oldValue, newValue) -> {
+        descriptionTextArea.textProperty().addListener((obs, oldValue, newValue) -> {
             updateDirty(oldValue, newValue);
 
-            if(newValue != null) {
+            if (newValue != null) {
                 currentMovie.setDescription(newValue);
             }
         });
 
         // config medium listview
         int index = mediumListView.getItems().indexOf(currentMovie.getMedium());
-        if(index >= 0) {
+        if (index >= 0) {
             mediumListView.getSelectionModel().select(index);
         }
 
-        mediumListView.getSelectionModel().selectedItemProperty().addListener( (obs, oldValue, newValue) -> {
+        mediumListView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             updateDirty(oldValue, newValue);
 
-            if(newValue != null) {
+            if (newValue != null) {
                 currentMovie.setMedium(newValue);
             }
         });
 
+        // config genre listview
+        genresListView.setCellFactory(CheckBoxListCell.forListView(new Callback<Genre, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(Genre item) {
+                BooleanProperty observable = new SimpleBooleanProperty();
+                observable.addListener((obs, wasSelected, isNowSelected) ->
+                        onGenrePressed(item, isNowSelected));
+                return observable;
+            }
+        }));
+
         updateDirty(false);
     }
 
-    private <T> void updateDirty(T left, T right) {
-        boolean dirty = !isEquals(left, right);
-        updateDirty(dirty);
-    }
-
-    private void updateDirty(boolean isDirty) {
-        if(isDirty) {
-            saveEditButton.setDisable(false);
-        } else {
-            saveEditButton.setDisable(true);
-        }
-    }
-
-    private <T> boolean isEquals(T left, T right) {
-        if(left == null) {
-            return left == right;
-        } else {
-            return left.equals(right);
-        }
-    }
-
     private void initializeMode() {
-        if(currentMovie != null) {
+        if (currentMovie != null) {
             saveEditButton.setText("Bewerken");
             saveEditButton.setDisable(false);
-            saveEditButton.setOnAction( actionEvent -> onUpdateMoviePressed());
+            saveEditButton.setOnAction(actionEvent -> onUpdateMoviePressed());
 
             deleteButton.setVisible(true);
             deleteButton.setDisable(false);
-            deleteButton.setOnAction( actionEvent -> onDeleteMoviePressed());
+            deleteButton.setOnAction(actionEvent -> onDeleteMoviePressed());
 
             nameTextField.setText(currentMovie.getName());
             labelTextField.setText(currentMovie.getLabel());
@@ -193,15 +179,23 @@ public class MovieFormController extends CocoonController {
         } else {
             currentMovie = new Movie();
             saveEditButton.setText("Opslaan");
-            saveEditButton.setOnAction( actionEvent -> onCreateMoviePressed());
+            saveEditButton.setOnAction(actionEvent -> onCreateMoviePressed());
 
             deleteButton.setDisable(true);
             deleteButton.setVisible(false);
         }
     }
 
+    private void onGenrePressed(Genre genre, boolean checked) {
+        System.out.println("Check box for " + genre + " selected " + checked );
+
+        MovieGenre movieGenre = new MovieGenre();
+        movieGenre.setMovie(currentMovie);
+        movieGenre.setGenre(genre);
+    }
+
     private void onCreateMoviePressed() {
-        if(movieService.isMovieValid(currentMovie)) {
+        if (movieService.isMovieValid(currentMovie)) {
             try {
                 movieService.create(currentMovie);
                 messageLabel.setText("Film opgeslagen!");
@@ -216,7 +210,7 @@ public class MovieFormController extends CocoonController {
     }
 
     private void onUpdateMoviePressed() {
-        if(movieService.isMovieValid(currentMovie)) {
+        if (movieService.isMovieValid(currentMovie)) {
             try {
                 movieService.update(currentMovie);
                 messageLabel.setText("");
@@ -240,6 +234,27 @@ public class MovieFormController extends CocoonController {
         });
     }
 
+    private <T> void updateDirty(T left, T right) {
+        boolean dirty = !isEquals(left, right);
+        updateDirty(dirty);
+    }
+
+    private void updateDirty(boolean isDirty) {
+        if (isDirty) {
+            saveEditButton.setDisable(false);
+        } else {
+            saveEditButton.setDisable(true);
+        }
+    }
+
+    private <T> boolean isEquals(T left, T right) {
+        if (left == null) {
+            return left == right;
+        } else {
+            return left.equals(right);
+        }
+    }
+
     private void showDialog(Runnable action) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmatie");
@@ -253,12 +268,8 @@ public class MovieFormController extends CocoonController {
         alert.setGraphic(image);
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK) {
             action.run();
         }
-    }
-
-    public void setMovie(Movie movie) {
-        currentMovie = movie;
     }
 }

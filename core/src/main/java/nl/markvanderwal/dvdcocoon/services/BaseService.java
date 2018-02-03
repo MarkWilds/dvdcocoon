@@ -79,19 +79,24 @@ public abstract class BaseService<data, id> {
     /**
      * Gets the data by ids
      *
-     * @param identifier the id for the data to find
+     * @param value the id for the data to find
      * @return the found data
      * @throws ServiceException
      */
-    public data getById(id identifier) throws ServiceException {
+    public data attach(data value) throws ServiceException {
         try {
-            data value = dao.queryForId(identifier);
-            if(!dataObservableList.contains(value)) {
-                dataObservableList.add(value);
+            if(dataObservableList.contains(value)) {
+                int index = dataObservableList.indexOf(value);
+                return dataObservableList.get(index);
             }
 
-            int index = dataObservableList.indexOf(value);
-            return dataObservableList.get(index);
+            List<data> remote = dao.queryForMatching(value);
+            if(remote.size() > 0) {
+                dataObservableList.add(remote.get(0));
+                return remote.get(0);
+            }
+
+            throw new ServiceException("Could not find value by id");
         } catch (SQLException ex) {
             throw new ServiceException("Kon de waarde niet vinden");
         }

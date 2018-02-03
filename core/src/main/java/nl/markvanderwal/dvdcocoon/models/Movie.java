@@ -3,6 +3,9 @@ package nl.markvanderwal.dvdcocoon.models;
 import com.j256.ormlite.field.*;
 import com.j256.ormlite.table.*;
 import nl.markvanderwal.dvdcocoon.*;
+import org.openjdk.tools.javah.*;
+
+import java.util.*;
 
 /**
  * @author Mark "Wilds" van der Wal
@@ -26,8 +29,10 @@ public class Movie {
     @DatabaseField
     private String description;
 
-    @DatabaseField(canBeNull = true, foreign = true, foreignAutoRefresh = true)
+    @DatabaseField(canBeNull = true, foreign = true)
     private Medium medium;
+
+    private List<Genre> genres;
 
     public int getId() {
         return id;
@@ -90,5 +95,13 @@ public class Movie {
     @Override
     public int hashCode() {
         return getId();
+    }
+
+    public List<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
     }
 }

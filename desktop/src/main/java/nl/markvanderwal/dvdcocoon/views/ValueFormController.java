@@ -85,12 +85,6 @@ public class ValueFormController extends CocoonController {
                 saveButton.setDisable(false);
             }
         });
-
-        try {
-            service.fetch();
-        } catch (ServiceException e) {
-            LOGGER.error(String.format("%s", e.getMessage()));
-        }
     }
 
     private void onSaveValuePressed(ActionEvent event) {

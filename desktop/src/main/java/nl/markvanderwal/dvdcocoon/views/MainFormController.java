@@ -13,6 +13,7 @@ import org.apache.logging.log4j.*;
 import javax.inject.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.*;
 
 /**
  * @author Mark "Wilds" van der Wal
@@ -25,6 +26,7 @@ public class MainFormController extends CocoonController {
     private final MovieService movieService;
     private final MediumService mediumService;
     private final GenreService genreService;
+    private final MovieGenreService movieGenreService;
 
     private FilteredList<Movie> filteredMovies;
 
@@ -79,10 +81,12 @@ public class MainFormController extends CocoonController {
     private TextField searchTextInput;
 
     @Inject
-    public MainFormController(MovieService movieService, MediumService mediumService, GenreService genreService) {
+    public MainFormController(MovieService movieService, MediumService mediumService,
+                              GenreService genreService, MovieGenreService movieGenreService) {
         this.movieService = movieService;
         this.mediumService = mediumService;
         this.genreService = genreService;
+        this.movieGenreService = movieGenreService;
     }
 
     @Override
@@ -97,6 +101,7 @@ public class MainFormController extends CocoonController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        initializeData();
         initializeButtonIcons();
         initializeTableView();
         initializeFilterView();
@@ -125,8 +130,58 @@ public class MainFormController extends CocoonController {
         });
     }
 
-    private void initializeButtonIcons() {
+    private void initializeData() {
+        try {
+            movieService.fetch();
+        } catch (ServiceException e) {
+            LOGGER.error("Gefaald om de film data op te halen!");
+        }
 
+        try {
+            mediumService.fetch();
+        } catch (ServiceException e) {
+            LOGGER.error("Gefaald om de medium data op te halen!");
+        }
+
+        try {
+            genreService.fetch();
+        } catch (ServiceException e) {
+            LOGGER.error("Gefaald om de genre data op te halen!");
+        }
+
+        try {
+            movieGenreService.fetch();
+        } catch (ServiceException e) {
+            LOGGER.error("Gefaald om de movie-genre data op te halen!");
+        }
+
+        // lazy load all mediums
+        movieService.bind().forEach( movie -> {
+            try {
+                movie.setMedium( mediumService.attach(movie.getMedium()));
+            } catch (ServiceException e) {
+                LOGGER.error(String.format("Failed to get medium for movie %s", movie));
+            }
+        });
+    }
+
+    private void initializeButtonIcons() {
+//        IntStream.range(4000, 10000).forEach(i-> {
+//            Movie movie = new Movie();
+//            movie.setName("Test");
+//            movie.setLabel("LBL");
+//            movie.setName(movie.getName() + i);
+//            movie.setLabel(movie.getLabel() + i);
+//
+//            Medium m = new Medium();
+//            m.setId(1);
+//            try {
+//                movie.setMedium( mediumService.attach(m));
+//                movieService.create(movie);
+//            } catch (ServiceException e) {
+//                e.printStackTrace();
+//            }
+//        });
     }
 
     private void initializeTableView() {
@@ -154,16 +209,11 @@ public class MainFormController extends CocoonController {
             return new SimpleStringProperty("N.V.T");
         });
 
+
         filteredMovies = new FilteredList<>(movieService.bind(), this::movieFilter);
         SortedList<Movie> sortedList = new SortedList<>(filteredMovies);
         sortedList.comparatorProperty().bind(movieTable.comparatorProperty());
         movieTable.setItems(sortedList);
-
-        try {
-            movieService.fetch();
-        } catch (ServiceException e) {
-            LOGGER.error("Gefaald om de film data op te halen!");
-        }
     }
 
     private void initializeFilterView() {
