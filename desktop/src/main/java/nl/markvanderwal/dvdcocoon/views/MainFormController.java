@@ -13,7 +13,6 @@ import org.apache.logging.log4j.*;
 import javax.inject.*;
 import java.net.*;
 import java.util.*;
-import java.util.stream.*;
 
 /**
  * @author Mark "Wilds" van der Wal
@@ -132,12 +131,6 @@ public class MainFormController extends CocoonController {
 
     private void initializeData() {
         try {
-            movieService.fetch();
-        } catch (ServiceException e) {
-            LOGGER.error("Gefaald om de film data op te halen!");
-        }
-
-        try {
             mediumService.fetch();
         } catch (ServiceException e) {
             LOGGER.error("Gefaald om de medium data op te halen!");
@@ -150,15 +143,21 @@ public class MainFormController extends CocoonController {
         }
 
         try {
+            movieService.fetch();
+        } catch (ServiceException e) {
+            LOGGER.error("Gefaald om de film data op te halen!");
+        }
+
+        try {
             movieGenreService.fetch();
         } catch (ServiceException e) {
             LOGGER.error("Gefaald om de movie-genre data op te halen!");
         }
 
         // lazy load all mediums
-        movieService.bind().forEach( movie -> {
+        movieService.bind().forEach(movie -> {
             try {
-                movie.setMedium( mediumService.attach(movie.getMedium()));
+                movie.setMedium(mediumService.attach(movie.getMedium()));
             } catch (ServiceException e) {
                 LOGGER.error(String.format("Failed to get medium for movie %s", movie));
             }

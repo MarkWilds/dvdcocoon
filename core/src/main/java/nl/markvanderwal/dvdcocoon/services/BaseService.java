@@ -27,7 +27,7 @@ public abstract class BaseService<data, id> {
     }
 
     @Inject
-    public void setDao(Database database) {
+    public void setDatabase(Database database) {
         dao = initializeDao(database);
     }
 

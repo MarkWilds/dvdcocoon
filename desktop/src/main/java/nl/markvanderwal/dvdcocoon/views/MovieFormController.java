@@ -148,13 +148,26 @@ public class MovieFormController extends CocoonController {
             }
         });
 
-        // config genre listview
+        // config genre listview;
         genresListView.setCellFactory(CheckBoxListCell.forListView(new Callback<Genre, ObservableValue<Boolean>>() {
             @Override
             public ObservableValue<Boolean> call(Genre item) {
                 BooleanProperty observable = new SimpleBooleanProperty();
-                observable.addListener((obs, wasSelected, isNowSelected) ->
-                        onGenrePressed(item, isNowSelected));
+
+                // set default state
+                if(currentMovie != null) {
+                    currentMovie.getGenres().forEach( genre -> {
+                        if(item.equals(genre)){
+                            observable.setValue(true);
+                        }
+                    });
+                }
+
+                observable.addListener((obs, wasSelected, isNowSelected) -> {
+                    updateDirty(wasSelected, isNowSelected);
+                    onGenrePressed(item, isNowSelected);
+                });
+
                 return observable;
             }
         }));
@@ -189,9 +202,14 @@ public class MovieFormController extends CocoonController {
     private void onGenrePressed(Genre genre, boolean checked) {
         System.out.println("Check box for " + genre + " selected " + checked );
 
-        MovieGenre movieGenre = new MovieGenre();
-        movieGenre.setMovie(currentMovie);
-        movieGenre.setGenre(genre);
+        List<Genre> currentGenres = currentMovie.getGenres();
+        if(checked) {
+            currentGenres.add(genre);
+        } else {
+            currentGenres.remove(genre);
+        }
+
+        System.out.println(currentGenres);
     }
 
     private void onCreateMoviePressed() {

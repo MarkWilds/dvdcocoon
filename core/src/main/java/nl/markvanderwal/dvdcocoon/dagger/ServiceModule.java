@@ -16,7 +16,7 @@ public class ServiceModule {
     @Singleton
     public static MovieService providesMovieService(Database database) {
         MovieService service = new MovieService();
-        service.setDao(database);
+        service.setDatabase(database);
         return service;
     }
 
@@ -24,7 +24,7 @@ public class ServiceModule {
     @Singleton
     public static MediumService providesMediumService(Database database) {
         MediumService service = new MediumService();
-        service.setDao(database);
+        service.setDatabase(database);
         return service;
     }
 
@@ -32,7 +32,7 @@ public class ServiceModule {
     @Singleton
     public static GenreService providesGenreService(Database database) {
         GenreService service = new GenreService();
-        service.setDao(database);
+        service.setDatabase(database);
         return service;
     }
 
@@ -40,7 +40,7 @@ public class ServiceModule {
     @Singleton
     public static MovieGenreService providesMovieGenreService(Database database) {
         MovieGenreService service = new MovieGenreService();
-        service.setDao(database);
+        service.setDatabase(database);
         return service;
     }
 }

@@ -34,6 +34,10 @@ public class Movie {
 
     private List<Genre> genres;
 
+    public Movie() {
+        genres = new ArrayList<>();
+    }
+
     public int getId() {
         return id;
     }
