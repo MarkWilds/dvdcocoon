@@ -22,12 +22,11 @@ import java.util.*;
  */
 public class MovieFormController extends CocoonController {
 
-    private static final Logger LOGGER = LogManager.getLogger(ValueFormController.class);
+    private static final Logger LOGGER = LogManager.getLogger(MovieFormController.class);
 
     private MovieService movieService;
     private MediumService mediumService;
     private GenreService genreService;
-    private MovieGenreService movieGenreService;
 
     private Movie currentMovie;
 
@@ -66,15 +65,23 @@ public class MovieFormController extends CocoonController {
 
     @Inject
     public MovieFormController(MovieService movieService, MediumService mediumService,
-                               GenreService genreService, MovieGenreService movieGenreService) {
+                               GenreService genreService) {
         this.movieService = movieService;
         this.mediumService = mediumService;
         this.genreService = genreService;
-        this.movieGenreService = movieGenreService;
     }
 
     public void setMovie(Movie movie) {
-        currentMovie = movie;
+        if(movie != null) {
+            Movie cacheMovie = new Movie();
+            cacheMovie.setMedium(movie.getMedium());
+            cacheMovie.setLabel(movie.getLabel());
+            cacheMovie.setName(movie.getName());
+            cacheMovie.setDescription(movie.getDescription());
+            cacheMovie.setActors(movie.getActors());
+            cacheMovie.setId(movie.getId());
+            currentMovie = cacheMovie;
+        }
     }
 
     @Override
@@ -101,38 +108,15 @@ public class MovieFormController extends CocoonController {
             showValueForm(actionEvent, "Genres", genreService, Genre.class);
         });
 
+        ChangeListener<? super String> onDirtyChanger = (obs, oldValue, newValue) -> {
+            updateDirty(oldValue, newValue);
+        };
+
         // set events
-        nameTextField.textProperty().addListener((obs, oldValue, newValue) -> {
-            updateDirty(oldValue, newValue);
-
-            if (newValue != null) {
-                currentMovie.setName(newValue);
-            }
-        });
-
-        labelTextField.textProperty().addListener((obs, oldValue, newValue) -> {
-            updateDirty(oldValue, newValue);
-
-            if (newValue != null) {
-                currentMovie.setLabel(newValue);
-            }
-        });
-
-        castTextArea.textProperty().addListener((obs, oldValue, newValue) -> {
-            updateDirty(oldValue, newValue);
-
-            if (newValue != null) {
-                currentMovie.setActors(newValue);
-            }
-        });
-
-        descriptionTextArea.textProperty().addListener((obs, oldValue, newValue) -> {
-            updateDirty(oldValue, newValue);
-
-            if (newValue != null) {
-                currentMovie.setDescription(newValue);
-            }
-        });
+        nameTextField.textProperty().addListener(onDirtyChanger);
+        labelTextField.textProperty().addListener(onDirtyChanger);
+        castTextArea.textProperty().addListener(onDirtyChanger);
+        descriptionTextArea.textProperty().addListener(onDirtyChanger);
 
         // config medium listview
         int index = mediumListView.getItems().indexOf(currentMovie.getMedium());
@@ -144,6 +128,7 @@ public class MovieFormController extends CocoonController {
             updateDirty(oldValue, newValue);
 
             if (newValue != null) {
+                LOGGER.debug("FIX ME! I SHOULD NOT BE CALLED IN ALL SITUATIONS FOR: " + newValue);
                 currentMovie.setMedium(newValue);
             }
         });
@@ -153,6 +138,10 @@ public class MovieFormController extends CocoonController {
             @Override
             public ObservableValue<Boolean> call(Genre item) {
                 BooleanProperty observable = new SimpleBooleanProperty();
+                observable.addListener((obs, wasSelected, isNowSelected) -> {
+                    updateDirty(wasSelected, isNowSelected);
+                    onGenrePressed(item, isNowSelected);
+                });
 
                 // set default state
                 if(currentMovie != null) {
@@ -163,16 +152,18 @@ public class MovieFormController extends CocoonController {
                     });
                 }
 
-                observable.addListener((obs, wasSelected, isNowSelected) -> {
-                    updateDirty(wasSelected, isNowSelected);
-                    onGenrePressed(item, isNowSelected);
-                });
-
                 return observable;
             }
         }));
 
         updateDirty(false);
+    }
+
+    private void setMovieData() {
+        currentMovie.setName(nameTextField.getText());
+        currentMovie.setLabel(labelTextField.getText());
+        currentMovie.setActors(castTextArea.getText());
+        currentMovie.setDescription(descriptionTextArea.getText());
     }
 
     private void initializeMode() {
@@ -213,6 +204,7 @@ public class MovieFormController extends CocoonController {
     }
 
     private void onCreateMoviePressed() {
+        setMovieData();
         if (movieService.isMovieValid(currentMovie)) {
             try {
                 movieService.create(currentMovie);
@@ -228,6 +220,7 @@ public class MovieFormController extends CocoonController {
     }
 
     private void onUpdateMoviePressed() {
+        setMovieData();
         if (movieService.isMovieValid(currentMovie)) {
             try {
                 movieService.update(currentMovie);

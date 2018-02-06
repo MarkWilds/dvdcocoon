@@ -2,6 +2,7 @@ package nl.markvanderwal.dvdcocoon.views;
 
 import com.google.common.base.*;
 import javafx.beans.property.*;
+import javafx.collections.*;
 import javafx.collections.transformation.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
@@ -25,7 +26,6 @@ public class MainFormController extends CocoonController {
     private final MovieService movieService;
     private final MediumService mediumService;
     private final GenreService genreService;
-    private final MovieGenreService movieGenreService;
 
     private FilteredList<Movie> filteredMovies;
 
@@ -81,11 +81,10 @@ public class MainFormController extends CocoonController {
 
     @Inject
     public MainFormController(MovieService movieService, MediumService mediumService,
-                              GenreService genreService, MovieGenreService movieGenreService) {
+                              GenreService genreService) {
         this.movieService = movieService;
         this.mediumService = mediumService;
         this.genreService = genreService;
-        this.movieGenreService = movieGenreService;
     }
 
     @Override
@@ -100,68 +99,17 @@ public class MainFormController extends CocoonController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initializeData();
-        initializeButtonIcons();
-        initializeTableView();
-        initializeFilterView();
-
-        newMovieButton.setOnAction(this::showMovieForm);
-
-        mediumsButton.setOnAction(actionEvent -> {
-            showValueForm(actionEvent, "Media", mediumService, Medium.class);
-        });
-
-        genresButton.setOnAction(actionEvent -> {
-            showValueForm(actionEvent, "Genres", genreService, Genre.class);
-        });
-
-        movieToolbar.setText(String.format("%s films geladen", movieTable.getItems().size()));
-
-        movieTable.setRowFactory(tv -> {
-            TableRow<Movie> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                    Movie rowData = row.getItem();
-                    showMovieForm(event, rowData);
-                }
-            });
-            return row;
-        });
-    }
-
-    private void initializeData() {
-        try {
-            mediumService.fetch();
-        } catch (ServiceException e) {
-            LOGGER.error("Gefaald om de medium data op te halen!");
-        }
-
-        try {
-            genreService.fetch();
-        } catch (ServiceException e) {
-            LOGGER.error("Gefaald om de genre data op te halen!");
-        }
-
         try {
             movieService.fetch();
+
+            initializeButtonIcons();
+            initializeTableView();
+            initializeFilterView();
+            initializeActions();
+
         } catch (ServiceException e) {
             LOGGER.error("Gefaald om de film data op te halen!");
         }
-
-        try {
-            movieGenreService.fetch();
-        } catch (ServiceException e) {
-            LOGGER.error("Gefaald om de movie-genre data op te halen!");
-        }
-
-        // lazy load all mediums
-        movieService.bind().forEach(movie -> {
-            try {
-                movie.setMedium(mediumService.attach(movie.getMedium()));
-            } catch (ServiceException e) {
-                LOGGER.error(String.format("Failed to get medium for movie %s", movie));
-            }
-        });
     }
 
     private void initializeButtonIcons() {
@@ -192,12 +140,7 @@ public class MainFormController extends CocoonController {
         });
 
         mediumColumn.setCellValueFactory(cellData -> {
-            Medium medium = cellData.getValue().getMedium();
-            String mediumText = "N.V.T";
-            if (medium != null) {
-                mediumText = medium.getName();
-            }
-            return new SimpleStringProperty(mediumText);
+            return new SimpleObjectProperty<>(cellData.getValue().getMedium().toString());
         });
 
         nameColumn.setCellValueFactory(cellData -> {
@@ -208,7 +151,6 @@ public class MainFormController extends CocoonController {
             return new SimpleStringProperty("N.V.T");
         });
 
-
         filteredMovies = new FilteredList<>(movieService.bind(), this::movieFilter);
         SortedList<Movie> sortedList = new SortedList<>(filteredMovies);
         sortedList.comparatorProperty().bind(movieTable.comparatorProperty());
@@ -216,13 +158,73 @@ public class MainFormController extends CocoonController {
     }
 
     private void initializeFilterView() {
+        searchButton.setOnAction(actionEvent -> {
+            filteredMovies.setPredicate(this::movieFilter);
+        });
+
         clearButton.setOnAction(actionEvent -> {
             searchTextInput.setText("");
             filteredMovies.setPredicate(movie -> true);
         });
+    }
 
-        searchButton.setOnAction(actionEvent -> {
-            filteredMovies.setPredicate(this::movieFilter);
+    private void initializeActions() {
+        newMovieButton.setOnAction(this::showMovieForm);
+
+        mediumsButton.setOnAction(actionEvent -> {
+            showValueForm(actionEvent, "Media", mediumService, Medium.class);
+        });
+
+        genresButton.setOnAction(actionEvent -> {
+            showValueForm(actionEvent, "Genres", genreService, Genre.class);
+        });
+
+        // should be handled in side movie service
+        // this handles the removing of a medium and updates all movies to reflect this change
+        mediumService.bind().addListener(new ListChangeListener<Medium>() {
+            @Override
+            public void onChanged(Change<? extends Medium> c) {
+                while (c.next()) {
+                    if (!c.wasReplaced() && c.wasRemoved()) {
+                        LOGGER.debug("MOVIES ARE REEVALUATED AS MEDIUM IS REMOVED");
+                        Medium medium = c.getRemoved().get(0);
+
+                        // get all movies that have this medium
+                        movieService.bind().stream().forEach(movie -> {
+                            if (medium.equals(movie.getMedium())) {
+                                try {
+                                    movie.setMedium(null);
+                                    movieService.update(movie);
+                                } catch (ServiceException e) {
+                                    LOGGER.warn(e.getMessage());
+                                }
+                            }
+                        });
+                    }
+                }
+                // always refresh whatever medium change there is
+                movieTable.refresh();
+            }
+        });
+
+        genreService.bind().addListener(new ListChangeListener<Genre>() {
+            @Override
+            public void onChanged(Change<? extends Genre> c) {
+                LOGGER.debug(c);
+            }
+        });
+
+        movieToolbar.setText(String.format("%s films geladen", movieTable.getItems().size()));
+
+        movieTable.setRowFactory(tv -> {
+            TableRow<Movie> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    Movie rowData = row.getItem();
+                    showMovieForm(event, rowData);
+                }
+            });
+            return row;
         });
     }
 

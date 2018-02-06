@@ -21,7 +21,7 @@ public class ValueFormController extends CocoonController {
 
     private static final Logger LOGGER = LogManager.getLogger(ValueFormController.class);
 
-    private BaseService<IdValueType, Integer> service;
+    private ObservableService<IdValueType> service;
     private IdValueTypeFactory factory;
 
     @FXML
@@ -42,7 +42,7 @@ public class ValueFormController extends CocoonController {
     @FXML
     private Button deleteButton;
 
-    public ValueFormController(BaseService service, Class<? extends IdValueType> valueType) {
+    public ValueFormController(ObservableService service, Class<? extends IdValueType> valueType) {
         this.service = service;
         this.factory = (id, n) -> {
             return IdValueTypeFactory.create(id, n, valueType);
@@ -114,7 +114,6 @@ public class ValueFormController extends CocoonController {
 
             try {
                 service.update(value);
-                dataListView.getSelectionModel().select(firstSelected);
             } catch (ServiceException e) {
                 LOGGER.error(String.format("%s - %s", e.getMessage(), value.getName()));
             }
@@ -126,10 +125,10 @@ public class ValueFormController extends CocoonController {
         if (indices.size() > 0) {
             int firstSelected = indices.get(0);
             IdValueType value = dataListView.getItems().get(firstSelected);
+            dataListView.getSelectionModel().clearSelection();
 
             try {
                 service.delete(value);
-                dataListView.getSelectionModel().clearSelection();
             } catch (ServiceException e) {
                 LOGGER.error(String.format("%s - %s", e.getMessage(), value.getName()));
             }

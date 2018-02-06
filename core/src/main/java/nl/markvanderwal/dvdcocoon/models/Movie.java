@@ -79,11 +79,19 @@ public class Movie {
     }
 
     public Medium getMedium() {
+        if(medium == null) {
+            return Medium.NULL_MEDIUM;
+        }
         return medium;
     }
 
     public void setMedium(Medium medium) {
         this.medium = medium;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     @Override

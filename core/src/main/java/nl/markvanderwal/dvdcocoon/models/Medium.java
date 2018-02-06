@@ -11,6 +11,17 @@ import nl.markvanderwal.dvdcocoon.*;
 @DatabaseTable(tableName = "Mediums")
 public class Medium implements IdValueType {
 
+    public static final Medium NULL_MEDIUM = new Medium();
+
+    public Medium() {
+        this(0, "N.V.T");
+    }
+
+    public Medium(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     @DatabaseField(generatedId = true)
     private int id;
 

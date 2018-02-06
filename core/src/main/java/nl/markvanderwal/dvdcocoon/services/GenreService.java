@@ -8,7 +8,12 @@ import nl.markvanderwal.dvdcocoon.models.*;
  * @author Mark "Wilds" van der Wal
  * @since 2-2-2018
  */
-public class GenreService extends BaseService<Genre, Integer> {
+public class GenreService extends ObservableService<Genre> {
+
+    public GenreService(Database database) {
+        super(database);
+    }
+
     @Override
     protected Dao<Genre, Integer> initializeDao(Database database) {
         return database.getGenreRepository();

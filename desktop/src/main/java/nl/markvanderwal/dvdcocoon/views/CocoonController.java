@@ -17,7 +17,7 @@ import java.io.*;
 public abstract class CocoonController extends AbstractFXMLViewController {
 
     protected void showValueForm(Event event, String name,
-                                 BaseService service, Class<? extends IdValueType> clazz) {
+                                 ObservableService service, Class<? extends IdValueType> clazz) {
         ValueFormController controller = new ValueFormController(service, clazz);
         Stage stage = controller.createStage(injector);
         controller.setValueName(name);
