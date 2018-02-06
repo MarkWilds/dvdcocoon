@@ -29,37 +29,27 @@ public class MovieFormController extends CocoonController {
     private GenreService genreService;
 
     private Movie currentMovie;
-
+    private Modes mode = Modes.SAVE;
     @FXML
     private Label messageLabel;
-
     @FXML
     private TextField nameTextField;
-
     @FXML
     private TextField labelTextField;
-
     @FXML
     private TextArea castTextArea;
-
     @FXML
     private TextArea descriptionTextArea;
-
     @FXML
     private Button mediumsButton;
-
     @FXML
     private Button genresButton;
-
     @FXML
     private Button saveEditButton;
-
     @FXML
     private Button deleteButton;
-
     @FXML
     private ListView<Medium> mediumListView;
-
     @FXML
     private ListView<Genre> genresListView;
 
@@ -72,15 +62,12 @@ public class MovieFormController extends CocoonController {
     }
 
     public void setMovie(Movie movie) {
-        if(movie != null) {
-            Movie cacheMovie = new Movie();
-            cacheMovie.setMedium(movie.getMedium());
-            cacheMovie.setLabel(movie.getLabel());
-            cacheMovie.setName(movie.getName());
-            cacheMovie.setDescription(movie.getDescription());
-            cacheMovie.setActors(movie.getActors());
-            cacheMovie.setId(movie.getId());
-            currentMovie = cacheMovie;
+        if (movie != null) {
+            mode = Modes.EDIT;
+            currentMovie = movie.clone();
+        } else {
+            mode = Modes.SAVE;
+            currentMovie = new Movie();
         }
     }
 
@@ -96,7 +83,6 @@ public class MovieFormController extends CocoonController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initializeMode();
         mediumListView.setItems(mediumService.bind());
         genresListView.setItems(genreService.bind());
 
@@ -119,19 +105,14 @@ public class MovieFormController extends CocoonController {
         descriptionTextArea.textProperty().addListener(onDirtyChanger);
 
         // config medium listview
-        int index = mediumListView.getItems().indexOf(currentMovie.getMedium());
-        if (index >= 0) {
-            mediumListView.getSelectionModel().select(index);
-        }
-
-        mediumListView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            updateDirty(oldValue, newValue);
-
-            if (newValue != null) {
-                LOGGER.debug("FIX ME! I SHOULD NOT BE CALLED IN ALL SITUATIONS FOR: " + newValue);
-                currentMovie.setMedium(newValue);
-            }
-        });
+        mediumListView.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((obs, oldValue, newValue) -> {
+                    if(currentMovie != null) {
+                        updateDirty(oldValue, newValue);
+                        currentMovie.setMedium(newValue);
+                    }
+                });
 
         // config genre listview;
         genresListView.setCellFactory(CheckBoxListCell.forListView(new Callback<Genre, ObservableValue<Boolean>>() {
@@ -144,9 +125,9 @@ public class MovieFormController extends CocoonController {
                 });
 
                 // set default state
-                if(currentMovie != null) {
-                    currentMovie.getGenres().forEach( genre -> {
-                        if(item.equals(genre)){
+                if (currentMovie != null) {
+                    currentMovie.getGenres().forEach(genre -> {
+                        if (item.equals(genre)) {
                             observable.setValue(true);
                         }
                     });
@@ -156,18 +137,26 @@ public class MovieFormController extends CocoonController {
             }
         }));
 
-        updateDirty(false);
+        setInitialState();
+    }
+
+    @Override
+    protected void deInitialize() {
+        mode = Modes.SAVE;
+        currentMovie = null;
     }
 
     private void setMovieData() {
-        currentMovie.setName(nameTextField.getText());
-        currentMovie.setLabel(labelTextField.getText());
-        currentMovie.setActors(castTextArea.getText());
-        currentMovie.setDescription(descriptionTextArea.getText());
+        if (currentMovie != null) {
+            currentMovie.setName(nameTextField.getText());
+            currentMovie.setLabel(labelTextField.getText());
+            currentMovie.setActors(castTextArea.getText());
+            currentMovie.setDescription(descriptionTextArea.getText());
+        }
     }
 
-    private void initializeMode() {
-        if (currentMovie != null) {
+    private void setInitialState() {
+        if (mode == Modes.EDIT) {
             saveEditButton.setText("Bewerken");
             saveEditButton.setDisable(false);
             saveEditButton.setOnAction(actionEvent -> onUpdateMoviePressed());
@@ -180,21 +169,26 @@ public class MovieFormController extends CocoonController {
             labelTextField.setText(currentMovie.getLabel());
             castTextArea.setText(currentMovie.getActors());
             descriptionTextArea.setText(currentMovie.getDescription());
-        } else {
-            currentMovie = new Movie();
+
+            int index = mediumListView.getItems().indexOf(currentMovie.getMedium());
+            if (index >= 0) {
+                mediumListView.getSelectionModel().select(index);
+            }
+        } else if(mode == Modes.SAVE){
             saveEditButton.setText("Opslaan");
             saveEditButton.setOnAction(actionEvent -> onCreateMoviePressed());
 
             deleteButton.setDisable(true);
             deleteButton.setVisible(false);
         }
+        updateDirty(false);
     }
 
     private void onGenrePressed(Genre genre, boolean checked) {
-        System.out.println("Check box for " + genre + " selected " + checked );
+        System.out.println("Check box for " + genre + " selected " + checked);
 
         List<Genre> currentGenres = currentMovie.getGenres();
-        if(checked) {
+        if (checked) {
             currentGenres.add(genre);
         } else {
             currentGenres.remove(genre);
@@ -209,7 +203,8 @@ public class MovieFormController extends CocoonController {
             try {
                 movieService.create(currentMovie);
                 messageLabel.setText("Film opgeslagen!");
-                initializeMode();
+                setMovie(currentMovie);
+                setInitialState();
                 updateDirty(false);
             } catch (ServiceException e) {
                 LOGGER.error(String.format("Film met label %s kon niet worden aangemaakt", currentMovie.getLabel()));
@@ -225,6 +220,7 @@ public class MovieFormController extends CocoonController {
             try {
                 movieService.update(currentMovie);
                 messageLabel.setText("");
+                setMovie(currentMovie);
                 updateDirty(false);
             } catch (ServiceException e) {
                 LOGGER.error(String.format("Film met label %s kon niet worden bijgewerkt", currentMovie.getLabel()));
@@ -282,5 +278,10 @@ public class MovieFormController extends CocoonController {
         if (result.get() == ButtonType.OK) {
             action.run();
         }
+    }
+
+    private enum Modes {
+        SAVE,
+        EDIT
     }
 }

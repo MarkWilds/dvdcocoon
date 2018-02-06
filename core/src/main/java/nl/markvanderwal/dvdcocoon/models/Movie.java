@@ -2,8 +2,6 @@ package nl.markvanderwal.dvdcocoon.models;
 
 import com.j256.ormlite.field.*;
 import com.j256.ormlite.table.*;
-import nl.markvanderwal.dvdcocoon.*;
-import org.openjdk.tools.javah.*;
 
 import java.util.*;
 
@@ -12,7 +10,7 @@ import java.util.*;
  * @since 1-2-2018
  */
 @DatabaseTable(tableName = "Movies")
-public class Movie {
+public class Movie implements Cloneable {
 
     @DatabaseField(generatedId = true)
     private int id;
@@ -79,7 +77,7 @@ public class Movie {
     }
 
     public Medium getMedium() {
-        if(medium == null) {
+        if (medium == null) {
             return Medium.NULL_MEDIUM;
         }
         return medium;
@@ -94,26 +92,45 @@ public class Movie {
         return getName();
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if(other == null) return false;
-        if(other == this) return true;
-        if(!(other instanceof Movie)) return false;
-
-        Movie otherMovie = (Movie)other;
-        return otherMovie.getId() == getId();
-    }
-
-    @Override
-    public int hashCode() {
-        return getId();
-    }
-
     public List<Genre> getGenres() {
         return genres;
     }
 
     public void setGenres(List<Genre> genres) {
         this.genres = genres;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof Movie)) return false;
+
+        Movie otherMovie = (Movie) other;
+        return otherMovie.getId() == getId();
+    }
+
+    @Override
+    public Movie clone() {
+        Movie copy = new Movie();
+
+        copy.setId(getId());
+        copy.setName(getName());
+        copy.setLabel(getLabel());
+        copy.setDescription(getDescription());
+        copy.setActors(getActors());
+        copy.setMedium(getMedium());
+
+        List<Genre> genres = getGenres();
+        List<Genre> copiedGenres = Arrays.asList(new Genre[genres.size()]);
+        Collections.copy(copiedGenres, genres);
+        copy.setGenres(copiedGenres);
+
+        return copy;
+    }
+
+    @Override
+    public int hashCode() {
+        return getId();
     }
 }

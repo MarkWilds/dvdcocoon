@@ -1,13 +1,9 @@
 package nl.markvanderwal.dvdcocoon.views;
 
-import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
-import javafx.scene.image.*;
 import javafx.stage.*;
-import nl.markvanderwal.dvdcocoon.*;
 import nl.markvanderwal.dvdcocoon.dagger.*;
-import nl.markvanderwal.dvdcocoon.services.*;
 
 import java.io.*;
 import java.net.*;
@@ -91,6 +87,13 @@ abstract class AbstractFXMLViewController implements Initializable {
 
         stage.setScene(new Scene(root));
         stage.sizeToScene();
+
+        stage.setOnCloseRequest( windowEvent -> {
+            deInitialize();
+        });
         return stage;
+    }
+
+    protected void deInitialize() {
     }
 }

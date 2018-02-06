@@ -1,7 +1,6 @@
 package nl.markvanderwal.dvdcocoon.services;
 
 import com.j256.ormlite.dao.*;
-import javafx.beans.value.*;
 import javafx.collections.*;
 import nl.markvanderwal.dvdcocoon.dal.*;
 import nl.markvanderwal.dvdcocoon.exceptions.*;
@@ -24,7 +23,8 @@ public abstract class ObservableService<data> implements Service<data> {
 
     ObservableService(Database database) {
         dao = initializeDao(database);
-        observableDataList = FXCollections.observableArrayList();;
+        observableDataList = FXCollections.observableArrayList();
+        ;
         cachedMedium = new Medium(0, "TROLL");
     }
 
@@ -129,6 +129,9 @@ public abstract class ObservableService<data> implements Service<data> {
             dao.update(value);
 
             int index = observableDataList.indexOf(value);
+            if (index <= 0) {
+                throw new ServiceException("data is neit aanwezig!");
+            }
             observableDataList.set(index, value);
         } catch (SQLException ex) {
             throw new ServiceException("Data kon niet bijgewerkt worden");

@@ -50,13 +50,13 @@ public class Medium implements IdValueType {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if(other == null) return false;
-        if(other == this) return true;
-        if(!(other instanceof Medium)) return false;
+    public boolean equals(Object o) {
+        if(o == null) return false;
+        if(o == this) return true;
+        if(!(o instanceof Medium)) return false;
 
-        Medium otherMedium = (Medium)other;
-        return otherMedium.getId() == getId();
+        Medium other = (Medium)o;
+        return other.getId() == getId();
     }
 
     @Override

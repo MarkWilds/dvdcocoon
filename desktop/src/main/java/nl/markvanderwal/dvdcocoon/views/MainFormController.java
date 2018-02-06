@@ -186,7 +186,6 @@ public class MainFormController extends CocoonController {
             public void onChanged(Change<? extends Medium> c) {
                 while (c.next()) {
                     if (!c.wasReplaced() && c.wasRemoved()) {
-                        LOGGER.debug("MOVIES ARE REEVALUATED AS MEDIUM IS REMOVED");
                         Medium medium = c.getRemoved().get(0);
 
                         // get all movies that have this medium
