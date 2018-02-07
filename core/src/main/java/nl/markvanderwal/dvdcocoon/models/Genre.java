@@ -11,7 +11,9 @@ import nl.markvanderwal.dvdcocoon.*;
 @DatabaseTable(tableName = "Genres")
 public class Genre implements IdValueType {
 
-    @DatabaseField(generatedId = true)
+    public final static String GENRE_ID_FIELD_NAME = "id";
+
+    @DatabaseField(generatedId = true, columnName = GENRE_ID_FIELD_NAME)
     private int id;
 
     @DatabaseField
@@ -39,13 +41,13 @@ public class Genre implements IdValueType {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if(other == null) return false;
-        if(other == this) return true;
-        if(!(other instanceof Genre)) return false;
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (!(o instanceof Genre)) return false;
 
-        Genre otherGenre = (Genre)other;
-        return otherGenre.getId() == getId();
+        Genre other = (Genre) o;
+        return other.getId() == getId();
     }
 
     @Override

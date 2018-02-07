@@ -122,7 +122,7 @@ public class Movie implements Cloneable {
         copy.setMedium(getMedium());
 
         List<Genre> genres = getGenres();
-        List<Genre> copiedGenres = Arrays.asList(new Genre[genres.size()]);
+        List<Genre> copiedGenres = new ArrayList<>(genres);
         Collections.copy(copiedGenres, genres);
         copy.setGenres(copiedGenres);
 

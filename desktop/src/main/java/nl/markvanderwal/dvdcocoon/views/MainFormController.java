@@ -14,6 +14,7 @@ import org.apache.logging.log4j.*;
 import javax.inject.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.*;
 
 /**
  * @author Mark "Wilds" van der Wal
@@ -113,17 +114,41 @@ public class MainFormController extends CocoonController {
     }
 
     private void initializeButtonIcons() {
-//        IntStream.range(4000, 10000).forEach(i-> {
+//        Medium m = new Medium();
+//        m.setId(1);
+//        m.setName("DVD");
+//
+//        try {
+//            mediumService.create(m);
+//        } catch (ServiceException e) {
+//            e.printStackTrace();
+//        }
+//
+//        Genre genre1 = new Genre();
+//        genre1.setId(1);
+//        genre1.setName("Fantasie");
+//
+//        Genre genre2 = new Genre();
+//        genre2.setId(2);
+//        genre2.setName("Drama");
+//
+//        try {
+//            genreService.create(genre1);
+//            genreService.create(genre2);
+//        } catch (ServiceException e) {
+//            e.printStackTrace();
+//        }
+//
+//        IntStream.range(0, 5000).forEach(i -> {
 //            Movie movie = new Movie();
 //            movie.setName("Test");
 //            movie.setLabel("LBL");
 //            movie.setName(movie.getName() + i);
 //            movie.setLabel(movie.getLabel() + i);
 //
-//            Medium m = new Medium();
-//            m.setId(1);
 //            try {
-//                movie.setMedium( mediumService.attach(m));
+//                movie.setMedium(m);
+//                movie.setGenres(Arrays.asList(genre1, genre2));
 //                movieService.create(movie);
 //            } catch (ServiceException e) {
 //                e.printStackTrace();
@@ -148,7 +173,13 @@ public class MainFormController extends CocoonController {
         });
 
         genresColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty("N.V.T");
+            List<Genre> genres = cellData.getValue().getGenres();
+            String genreText = "N.V.T";
+            if (genres.size() > 0) {
+                genreText = genres.stream().map(Genre::getName).collect(Collectors.joining(", "));
+            }
+
+            return new SimpleStringProperty(genreText);
         });
 
         filteredMovies = new FilteredList<>(movieService.bind(), this::movieFilter);
@@ -179,7 +210,7 @@ public class MainFormController extends CocoonController {
             showValueForm(actionEvent, "Genres", genreService, Genre.class);
         });
 
-        // should be handled in side movie service
+        // should be handled inside movie service
         // this handles the removing of a medium and updates all movies to reflect this change
         mediumService.bind().addListener(new ListChangeListener<Medium>() {
             @Override
@@ -195,21 +226,39 @@ public class MainFormController extends CocoonController {
                                     movie.setMedium(null);
                                     movieService.update(movie);
                                 } catch (ServiceException e) {
-                                    LOGGER.warn(e.getMessage());
+                                    LOGGER.error(e.getMessage());
                                 }
                             }
                         });
                     }
                 }
-                // always refresh whatever medium change there is
                 movieTable.refresh();
             }
         });
 
+        // should be handled inside movie service
+        // this handles the removing of a genre and updates all movies to reflect this change
         genreService.bind().addListener(new ListChangeListener<Genre>() {
             @Override
             public void onChanged(Change<? extends Genre> c) {
-                LOGGER.debug(c);
+                while (c.next()) {
+                    if (!c.wasReplaced() && c.wasRemoved()) {
+                        Genre genre = c.getRemoved().get(0);
+
+                        movieService.bind().stream().forEach(movie -> {
+                            List<Genre> movieGenres = movie.getGenres();
+                            if (movieGenres.contains(genre)) {
+                                try {
+                                    movieGenres.remove(genre);
+                                    movieService.update(movie);
+                                } catch (ServiceException e) {
+                                    LOGGER.error(e.getMessage());
+                                }
+                            }
+                        });
+                    }
+                }
+                movieTable.refresh();
             }
         });
 
@@ -255,6 +304,13 @@ public class MainFormController extends CocoonController {
         if (mediumFilter.isSelected()
                 && medium != null && !Strings.isNullOrEmpty(medium.getName())) {
             filter = filter || medium.getName().contains(searchText);
+        }
+
+        if (genreFilter.isSelected()) {
+            filter = filter || movie.getGenres().stream()
+                    .filter(genre -> genre.getName()
+                            .contains(searchText))
+                    .count() > 0;
         }
 
         return filter;

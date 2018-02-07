@@ -108,7 +108,7 @@ public class MovieFormController extends CocoonController {
         mediumListView.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((obs, oldValue, newValue) -> {
-                    if(currentMovie != null) {
+                    if (currentMovie != null) {
                         updateDirty(oldValue, newValue);
                         currentMovie.setMedium(newValue);
                     }
@@ -126,11 +126,14 @@ public class MovieFormController extends CocoonController {
 
                 // set default state
                 if (currentMovie != null) {
-                    currentMovie.getGenres().forEach(genre -> {
+                    Iterator<Genre> iterator = currentMovie.getGenres().iterator();
+                    while (iterator.hasNext()) {
+                        Genre genre = iterator.next();
                         if (item.equals(genre)) {
                             observable.setValue(true);
+                            break;
                         }
-                    });
+                    }
                 }
 
                 return observable;
@@ -174,7 +177,8 @@ public class MovieFormController extends CocoonController {
             if (index >= 0) {
                 mediumListView.getSelectionModel().select(index);
             }
-        } else if(mode == Modes.SAVE){
+
+        } else if (mode == Modes.SAVE) {
             saveEditButton.setText("Opslaan");
             saveEditButton.setOnAction(actionEvent -> onCreateMoviePressed());
 
@@ -185,16 +189,16 @@ public class MovieFormController extends CocoonController {
     }
 
     private void onGenrePressed(Genre genre, boolean checked) {
-        System.out.println("Check box for " + genre + " selected " + checked);
-
-        List<Genre> currentGenres = currentMovie.getGenres();
+        List<Genre> genres = currentMovie.getGenres();
         if (checked) {
-            currentGenres.add(genre);
+            if (!genres.contains(genre)) {
+                genres.add(genre);
+            }
         } else {
-            currentGenres.remove(genre);
+            if (genres.contains(genre)) {
+                genres.remove(genre);
+            }
         }
-
-        System.out.println(currentGenres);
     }
 
     private void onCreateMoviePressed() {

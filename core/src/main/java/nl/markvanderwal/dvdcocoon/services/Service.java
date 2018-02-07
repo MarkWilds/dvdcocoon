@@ -10,8 +10,6 @@ public interface Service<T> {
 
     List<T> getAll() throws Exception;
 
-    T getById(Integer id) throws Exception;
-
     void create(T value) throws Exception;
 
     void update(T value) throws Exception;

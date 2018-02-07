@@ -19,13 +19,13 @@ public abstract class ObservableService<data> implements Service<data> {
     protected ObservableList<data> observableDataList;
     protected Dao<data, Integer> dao;
 
-    private Medium cachedMedium;
-
     ObservableService(Database database) {
         dao = initializeDao(database);
         observableDataList = FXCollections.observableArrayList();
-        ;
-        cachedMedium = new Medium(0, "TROLL");
+    }
+
+    public Dao<data, Integer> getDao() {
+        return dao;
     }
 
     /**
@@ -53,25 +53,6 @@ public abstract class ObservableService<data> implements Service<data> {
     public void fetch() throws ServiceException {
         observableDataList.clear();
         observableDataList.addAll(getAll());
-    }
-
-    /**
-     * Gets a specific data from the local storage by id.
-     * The data needs to have override equals and hashcode for it to work.
-     *
-     * @param id the unique identifier for the data
-     * @return returns the data if found in local storage
-     * @throws ServiceException
-     */
-    public data getById(Integer id) throws ServiceException {
-        cachedMedium.setId(id);
-
-        if (observableDataList.contains(cachedMedium)) {
-            int index = observableDataList.indexOf(cachedMedium);
-            return observableDataList.get(index);
-        } else {
-            throw new ServiceException("Kon de specifieke data niet vinden");
-        }
     }
 
     /**
@@ -129,8 +110,8 @@ public abstract class ObservableService<data> implements Service<data> {
             dao.update(value);
 
             int index = observableDataList.indexOf(value);
-            if (index <= 0) {
-                throw new ServiceException("data is neit aanwezig!");
+            if (index < 0) {
+                throw new ServiceException("data is niet aanwezig!");
             }
             observableDataList.set(index, value);
         } catch (SQLException ex) {
