@@ -2,6 +2,7 @@ package nl.markvanderwal.dvdcocoon.views;
 
 import javafx.beans.property.*;
 import javafx.beans.value.*;
+import javafx.collections.*;
 import javafx.fxml.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
@@ -139,6 +140,20 @@ public class MovieFormController extends CocoonController {
                 return observable;
             }
         }));
+
+        genreService.bind().addListener(new ListChangeListener<Genre>() {
+            @Override
+            public void onChanged(Change<? extends Genre> c) {
+                while (c.next() && currentMovie != null) {
+                    if (!c.wasReplaced() && c.wasRemoved()) {
+                        Genre genre = c.getRemoved().get(0);
+                        if(currentMovie.getGenres().contains(genre)) {
+                            currentMovie.getGenres().remove(genre);
+                        }
+                    }
+                }
+            }
+        });
 
         setInitialState();
     }
