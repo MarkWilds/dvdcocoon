@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingBottom="4dp"
+    android:orientation="horizontal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Label"
+        android:id="@+id/cellMovieLabel"
+        android:textStyle="bold"
+        android:textSize="22dp"
+        android:paddingLeft="4dp"
+        android:textColor="#fffffff9" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medium"
+        android:id="@+id/cellMovieMedium"
+        android:textStyle="bold"
+        android:textSize="22dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="28dp"
+        android:textColor="#fffffff9" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MovieName"
+        android:id="@+id/cellMovieName"
+        android:textStyle="bold"
+        android:textSize="22dp"
+        android:paddingLeft="32dp"
+        android:textColor="#ffffffff" />
+</LinearLayout>
