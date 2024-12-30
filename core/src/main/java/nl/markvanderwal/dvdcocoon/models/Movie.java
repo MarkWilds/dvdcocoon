@@ -12,22 +12,22 @@ import java.util.*;
 @DatabaseTable(tableName = "Movies")
 public class Movie implements Cloneable {
 
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true, columnName = "_id")
     private int id;
 
-    @DatabaseField
+    @DatabaseField(columnName = "MovieName")
     private String name;
 
-    @DatabaseField
+    @DatabaseField(columnName = "MovieLabel")
     private String label;
 
-    @DatabaseField
+    @DatabaseField(columnName = "MovieActors")
     private String actors;
 
-    @DatabaseField
+    @DatabaseField(columnName = "MovieDescription")
     private String description;
 
-    @DatabaseField(canBeNull = true, foreign = true)
+    @DatabaseField(foreign = true, columnName = "MovieMediumID")
     private Medium medium;
 
     private List<Genre> genres;

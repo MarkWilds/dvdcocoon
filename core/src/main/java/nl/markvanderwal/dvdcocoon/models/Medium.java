@@ -22,10 +22,10 @@ public class Medium implements IdValueType {
         this.name = name;
     }
 
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true, columnName = "_id")
     private int id;
 
-    @DatabaseField
+    @DatabaseField(columnName = "MediumName")
     private String name;
 
     public int getId() {

@@ -11,12 +11,12 @@ import nl.markvanderwal.dvdcocoon.*;
 @DatabaseTable(tableName = "Genres")
 public class Genre implements IdValueType {
 
-    public final static String GENRE_ID_FIELD_NAME = "id";
+    public final static String GENRE_ID_FIELD_NAME = "_id";
 
     @DatabaseField(generatedId = true, columnName = GENRE_ID_FIELD_NAME)
     private int id;
 
-    @DatabaseField
+    @DatabaseField(columnName = "GenreName")
     private String name;
 
     public int getId() {

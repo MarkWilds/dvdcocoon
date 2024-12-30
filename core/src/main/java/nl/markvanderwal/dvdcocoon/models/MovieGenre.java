@@ -7,10 +7,10 @@ import com.j256.ormlite.table.*;
  * @author Mark "Wilds" van der Wal
  * @since 1-2-2018
  */
-@DatabaseTable(tableName = "MoviesGenres")
+@DatabaseTable(tableName = "Movie_Genre")
 public class MovieGenre {
-    public final static String MOVIE_ID_FIELD_NAME = "movie_id";
-    public final static String GENRE_ID_FIELD_NAME = "genre_id";
+    public final static String MOVIE_ID_FIELD_NAME = "MovieID";
+    public final static String GENRE_ID_FIELD_NAME = "GenreID";
 
     @DatabaseField(generatedId = true)
     private int id;
