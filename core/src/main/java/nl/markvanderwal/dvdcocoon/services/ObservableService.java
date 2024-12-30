@@ -1,13 +1,13 @@
 package nl.markvanderwal.dvdcocoon.services;
 
-import com.j256.ormlite.dao.*;
-import javafx.collections.*;
-import nl.markvanderwal.dvdcocoon.dal.*;
-import nl.markvanderwal.dvdcocoon.exceptions.*;
-import nl.markvanderwal.dvdcocoon.models.*;
+import com.j256.ormlite.dao.Dao;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import nl.markvanderwal.dvdcocoon.dal.Database;
+import nl.markvanderwal.dvdcocoon.exceptions.ServiceException;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Observable services keep their data in memory and need to call fetch before using any of its member methods.

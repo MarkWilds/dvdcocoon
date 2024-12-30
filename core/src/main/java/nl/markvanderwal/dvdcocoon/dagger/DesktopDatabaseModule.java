@@ -1,6 +1,7 @@
 package nl.markvanderwal.dvdcocoon.dagger;
 
-import dagger.*;
+import dagger.Provides;
+import dagger.Module;
 import nl.markvanderwal.dvdcocoon.dal.*;
 
 import javax.inject.*;
