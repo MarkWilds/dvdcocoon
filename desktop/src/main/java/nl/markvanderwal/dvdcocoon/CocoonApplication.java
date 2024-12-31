@@ -17,7 +17,7 @@ public class CocoonApplication extends Application {
 
     private static final Logger LOGGER = LogManager.getLogger(CocoonApplication.class);
 
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) {
         launch(args);
     }
 
@@ -27,7 +27,7 @@ public class CocoonApplication extends Application {
         MainFormController controller = injector.mainFormController().get();
         Stage mainStage = controller.createStage(primaryStage, injector);
 
-        InputStream iconStream = getClass().getResourceAsStream("/icon.png");
+        InputStream iconStream = getClass().getResourceAsStream("/icon.ico");
         mainStage.getIcons().add(new Image(iconStream));
 
         mainStage.setTitle("DVDCocoon 2.0");

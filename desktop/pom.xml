@@ -11,6 +11,16 @@
 
     <artifactId>desktop</artifactId>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.name>DvdCocoon</project.name>
+        <main.class>nl.markvanderwal.dvdcocoon.CocoonApplication</main.class>
+        <main.class.launcher>nl.markvanderwal.dvdcocoon.Launcher</main.class.launcher>
+        <fatJar.dir>${project.build.directory}/fatJar/</fatJar.dir>
+        <destination.dir>${project.build.directory}/${project.name}</destination.dir>
+        <destination.name>${project.name}</destination.name>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>nl.markvanderwal.dvdcocoon</groupId>
@@ -27,6 +37,12 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>23.0.1</version>
+            <classifier>win</classifier>
+        </dependency>
     </dependencies>
 
     <build>
@@ -41,5 +57,93 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>package exe</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.2.2</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <transformers>
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>${main.class.launcher}</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                    <outputFile>${project.build.directory}/fatJar/${project.build.finalName}.jar</outputFile>
+                                    <dependencyReducedPomLocation>
+                                        ${project.build.directory}/dependency-reduced-pom.xml
+                                    </dependencyReducedPomLocation>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>create-package</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>jpackage</executable>
+                                    <arguments>
+                                        <argument>--verbose</argument>
+                                        <argument>--input</argument>
+                                        <argument>${fatJar.dir}</argument>
+                                        <argument>--name</argument>
+                                        <argument>${project.name}</argument>
+                                        <argument>--main-class</argument>
+                                        <argument>${main.class}</argument>
+                                        <argument>--main-jar</argument>
+                                        <argument>${project.build.finalName}.jar</argument>
+                                        <argument>--type</argument>
+                                        <argument>app-image</argument>
+                                        <argument>--dest</argument>
+                                        <argument>${destination.dir}</argument>
+                                        <argument>--copyright</argument>
+                                        <argument>GPLv3</argument>
+                                        <argument>--vendor</argument>
+                                        <argument>Mark van der Wal</argument>
+                                        <argument>--icon</argument>
+                                        <argument>${project.basedir}/src/main/resources/icon.ico</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>tar</executable>
+                                    <arguments>
+                                        <argument>-czf</argument>
+                                        <argument>${project.build.directory}/${project.name}.tar.gz</argument>
+                                        <argument>-C</argument>
+                                        <argument>${destination.dir}</argument>
+                                        <argument>${destination.name}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -284,7 +284,7 @@ public class MovieFormController extends CocoonController {
         alert.setContentText("Weet u het zeker??");
         alert.initOwner(stage.getScene().getWindow());
 
-        ImageView image = new ImageView(getClass().getResource("/icon.png").toString());
+        ImageView image = new ImageView(getClass().getResource("/icon.ico").toString());
         image.setFitHeight(32);
         image.setFitWidth(32);
         alert.setGraphic(image);

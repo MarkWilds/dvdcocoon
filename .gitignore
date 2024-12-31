@@ -3,4 +3,5 @@
 target/
 */src/generated/*
 *.db
+*.s3db
 *.sqlite

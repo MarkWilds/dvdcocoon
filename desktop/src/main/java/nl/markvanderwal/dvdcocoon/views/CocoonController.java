@@ -37,7 +37,7 @@ public abstract class CocoonController extends AbstractFXMLViewController {
     }
 
     protected void showModal(String title, Stage controllerStage, Event event) {
-        InputStream iconStream = getClass().getResourceAsStream("/icon.png");
+        InputStream iconStream = getClass().getResourceAsStream("/icon.ico");
 
         controllerStage.setResizable(false);
         controllerStage.getIcons().add(new Image(iconStream));
