@@ -14,7 +14,7 @@ import java.sql.*;
  */
 public class DesktopDatabase implements Database {
 
-    private static final String databaseConnectionString = "jdbc:sqlite:dvdcocoon.sqlite";
+    private static final String databaseConnectionString = "jdbc:sqlite:CocoonDVD.s3db";
     private ConnectionSource connectionSource;
 
     private Dao<Movie, Integer> daoMovies;

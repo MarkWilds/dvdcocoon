@@ -103,7 +103,6 @@ public class MainFormController extends CocoonController {
         try {
             movieService.fetch();
 
-            initializeButtonIcons();
             initializeTableView();
             initializeFilterView();
             initializeActions();
@@ -113,69 +112,20 @@ public class MainFormController extends CocoonController {
         }
     }
 
-    private void initializeButtonIcons() {
-//        Medium m = new Medium();
-//        m.setId(1);
-//        m.setName("DVD");
-//
-//        try {
-//            mediumService.create(m);
-//        } catch (ServiceException e) {
-//            e.printStackTrace();
-//        }
-//
-//        Genre genre1 = new Genre();
-//        genre1.setId(1);
-//        genre1.setName("Fantasie");
-//
-//        Genre genre2 = new Genre();
-//        genre2.setId(2);
-//        genre2.setName("Drama");
-//
-//        try {
-//            genreService.create(genre1);
-//            genreService.create(genre2);
-//        } catch (ServiceException e) {
-//            e.printStackTrace();
-//        }
-//
-//        IntStream.range(0, 5000).forEach(i -> {
-//            Movie movie = new Movie();
-//            movie.setName("Test");
-//            movie.setLabel("LBL");
-//            movie.setName(movie.getName() + i);
-//            movie.setLabel(movie.getLabel() + i);
-//
-//            try {
-//                movie.setMedium(m);
-//                movie.setGenres(Arrays.asList(genre1, genre2));
-//                movieService.create(movie);
-//            } catch (ServiceException e) {
-//                e.printStackTrace();
-//            }
-//        });
-    }
-
     private void initializeTableView() {
         movieTable.setEditable(false);
         movieTable.setPlaceholder(new Label("Geen films gevonden"));
 
-        labelColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getLabel());
-        });
+        labelColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getLabel()));
 
-        mediumColumn.setCellValueFactory(cellData -> {
-            return new SimpleObjectProperty<>(cellData.getValue().getMedium().toString());
-        });
+        mediumColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getMedium().toString()));
 
-        nameColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getName());
-        });
+        nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
 
         genresColumn.setCellValueFactory(cellData -> {
             List<Genre> genres = cellData.getValue().getGenres();
             String genreText = "N.V.T";
-            if (genres.size() > 0) {
+            if (!genres.isEmpty()) {
                 genreText = genres.stream().map(Genre::getName).collect(Collectors.joining(", "));
             }
 
@@ -212,54 +162,48 @@ public class MainFormController extends CocoonController {
 
         // should be handled inside movie service
         // this handles the removing of a medium and updates all movies to reflect this change
-        mediumService.bind().addListener(new ListChangeListener<Medium>() {
-            @Override
-            public void onChanged(Change<? extends Medium> c) {
-                while (c.next()) {
-                    if (!c.wasReplaced() && c.wasRemoved()) {
-                        Medium medium = c.getRemoved().get(0);
+        mediumService.bind().addListener((ListChangeListener<Medium>) c -> {
+            while (c.next()) {
+                if (!c.wasReplaced() && c.wasRemoved()) {
+                    Medium medium = c.getRemoved().get(0);
 
-                        // get all movies that have this medium
-                        movieService.bind().stream().forEach(movie -> {
-                            if (medium.equals(movie.getMedium())) {
-                                try {
-                                    movie.setMedium(null);
-                                    movieService.update(movie);
-                                } catch (ServiceException e) {
-                                    LOGGER.error(e.getMessage());
-                                }
+                    // get all movies that have this medium
+                    movieService.bind().stream().forEach(movie -> {
+                        if (medium.equals(movie.getMedium())) {
+                            try {
+                                movie.setMedium(null);
+                                movieService.update(movie);
+                            } catch (ServiceException e) {
+                                LOGGER.error(e.getMessage());
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-                movieTable.refresh();
             }
+            movieTable.refresh();
         });
 
         // should be handled inside movie service
         // this handles the removing of a genre and updates all movies to reflect this change
-        genreService.bind().addListener(new ListChangeListener<Genre>() {
-            @Override
-            public void onChanged(Change<? extends Genre> c) {
-                while (c.next()) {
-                    if (!c.wasReplaced() && c.wasRemoved()) {
-                        Genre genre = c.getRemoved().get(0);
+        genreService.bind().addListener((ListChangeListener<Genre>) c -> {
+            while (c.next()) {
+                if (!c.wasReplaced() && c.wasRemoved()) {
+                    Genre genre = c.getRemoved().get(0);
 
-                        movieService.bind().stream().forEach(movie -> {
-                            List<Genre> movieGenres = movie.getGenres();
-                            if (movieGenres.contains(genre)) {
-                                try {
-                                    movieGenres.remove(genre);
-                                    movieService.update(movie);
-                                } catch (ServiceException e) {
-                                    LOGGER.error(e.getMessage());
-                                }
+                    movieService.bind().stream().forEach(movie -> {
+                        List<Genre> movieGenres = movie.getGenres();
+                        if (movieGenres.contains(genre)) {
+                            try {
+                                movieGenres.remove(genre);
+                                movieService.update(movie);
+                            } catch (ServiceException e) {
+                                LOGGER.error(e.getMessage());
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-                movieTable.refresh();
             }
+            movieTable.refresh();
         });
 
         movieToolbar.setText(String.format("%s films geladen", movieTable.getItems().size()));

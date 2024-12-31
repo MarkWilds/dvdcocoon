@@ -127,9 +127,7 @@ public class MovieFormController extends CocoonController {
 
                 // set default state
                 if (currentMovie != null) {
-                    Iterator<Genre> iterator = currentMovie.getGenres().iterator();
-                    while (iterator.hasNext()) {
-                        Genre genre = iterator.next();
+                    for (Genre genre : currentMovie.getGenres()) {
                         if (item.equals(genre)) {
                             observable.setValue(true);
                             break;
@@ -210,9 +208,7 @@ public class MovieFormController extends CocoonController {
                 genres.add(genre);
             }
         } else {
-            if (genres.contains(genre)) {
-                genres.remove(genre);
-            }
+            genres.remove(genre);
         }
     }
 
@@ -226,7 +222,7 @@ public class MovieFormController extends CocoonController {
                 setInitialState();
                 updateDirty(false);
             } catch (ServiceException e) {
-                LOGGER.error(String.format("Film met label %s kon niet worden aangemaakt", currentMovie.getLabel()));
+                LOGGER.error("Film met label {} kon niet worden aangemaakt", currentMovie.getLabel());
             }
         } else {
             messageLabel.setText("Film mist naam of label");
@@ -242,7 +238,7 @@ public class MovieFormController extends CocoonController {
                 setMovie(currentMovie);
                 updateDirty(false);
             } catch (ServiceException e) {
-                LOGGER.error(String.format("Film met label %s kon niet worden bijgewerkt", currentMovie.getLabel()));
+                LOGGER.error("Film met label {} kon niet worden bijgewerkt", currentMovie.getLabel());
             }
         } else {
             messageLabel.setText("Film mist naam of label");
@@ -255,7 +251,7 @@ public class MovieFormController extends CocoonController {
                 stage.close();
                 movieService.delete(currentMovie);
             } catch (ServiceException e) {
-                LOGGER.error(String.format("Film met label %s kon niet worden verwijderd", currentMovie.getLabel()));
+                LOGGER.error("Film met label {} kon niet worden verwijderd", currentMovie.getLabel());
             }
         });
     }
@@ -275,7 +271,7 @@ public class MovieFormController extends CocoonController {
 
     private <T> boolean isEquals(T left, T right) {
         if (left == null) {
-            return left == right;
+            return null == right;
         } else {
             return left.equals(right);
         }
